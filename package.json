@@ -1,0 +1,31 @@
+{
+    "name": "live-polling-app",
+    "version": "1.0.0",
+    "description": "A live polling application with Node.js and React.js",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write *",
+        "check-format": "prettier --check *",
+        "backend:start": "npm start --prefix backend",
+        "backend:dev": "npm run dev --prefix backend",
+        "frontend:start": "npm start --prefix frontend",
+        "frontend:dev": "npm run dev --prefix frontend"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@eslint/js": "^8.x.x",
+        "eslint": "^8.x.x",
+        "eslint-config-prettier": "^9.x.x",
+        "eslint-plugin-prettier": "^5.x.x",
+        "eslint-plugin-react": "^7.x.x",
+        "eslint-plugin-react-hooks": "^4.x.x",
+        "prettier": "^3.x.x",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.33.1"
+    }
+}

@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+
+# Build directories
+build/
+dist/
+
+# Dotfiles
+.git/
+.docker/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Docker-related files (if any in root)
+Dockerfile
+docker-compose.yml
