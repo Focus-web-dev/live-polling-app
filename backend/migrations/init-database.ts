@@ -1,10 +1,13 @@
-exports.up = function (knex) {
+import type { Knex } from "knex";
+import { DB_TABLE_NAMES } from "../src/enums/DB_TABLE_NAMES";
+
+export async function up(knex: Knex): Promise<void> {
     return knex.schema
-        .createTable("polls", (table) => {
+        .createTable(DB_TABLE_NAMES.polls, (table) => {
             table.string("id").primary();
             table.string("title").notNullable();
         })
-        .createTable("options", (table) => {
+        .createTable(DB_TABLE_NAMES.options, (table) => {
             table.string("id").primary();
             table
                 .string("poll_id")
@@ -15,8 +18,10 @@ exports.up = function (knex) {
             table.string("text").notNullable();
             table.integer("votes").defaultTo(0);
         });
-};
+}
 
-exports.down = function (knex) {
-    return knex.schema.dropTableIfExists("options").dropTableIfExists("polls");
-};
+export async function down(knex: Knex): Promise<void> {
+    return knex.schema
+        .dropTableIfExists(DB_TABLE_NAMES.options)
+        .dropTableIfExists(DB_TABLE_NAMES.polls);
+}

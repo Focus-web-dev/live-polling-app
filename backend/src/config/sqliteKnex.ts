@@ -1,9 +1,7 @@
 import knex from "knex";
-
-import fs from "fs";
 import path from "path";
 
-const databaseFileName = fs.readFileSync(path.join(__dirname, "../../database.sqlite"), "utf8");
+const databaseFileName = path.join(process.cwd(), "./data/database.sqlite");
 
 export const sqliteKnex = knex({
     client: "sqlite3",

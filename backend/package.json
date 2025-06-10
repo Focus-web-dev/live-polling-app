@@ -2,11 +2,13 @@
     "name": "live-polling-backend",
     "version": "1.0.0",
     "description": "Backend for the Live Polling App",
-    "main": "dist/server.js",
+    "main": "dist/backend/src/server.js",
     "scripts": {
         "build": "tsc",
-        "start": "node dist/server.js",
-        "dev": "nodemon --watch src --exec \"npm run build && npm run start\" --ext ts"
+        "start": "node dist/backend/src/server.js",
+        "dev": "nodemon --watch src --exec \"npm run build && npm run start\" --ext ts",
+        "init-database": "knex migrate:up init-database.ts",
+        "prepare": "npm run init-database"
     },
     "keywords": [],
     "author": "",
@@ -28,6 +30,7 @@
         "@types/uuid": "^10.0.0",
         "copyfiles": "^2.4.1",
         "nodemon": "^3.1.4",
+        "ts-node": "^10.9.2",
         "typescript": "^5.4.5"
     }
 }
