@@ -64,6 +64,7 @@ export default [
         rules: {
             ...eslintConfigPrettier.rules,
             "prettier/prettier": "error",
+            endOfLine: "off",
         },
     },
 
