@@ -6,8 +6,6 @@ import PollOption from "@shared/interfaces/PollOption";
 
 class PollModel {
     public async insert(poll: PollData): Promise<PollData> {
-        console.log("KNEX: ", sqliteKnex);
-
         await sqliteKnex("polls").insert({ id: poll.id, title: poll.title });
         await sqliteKnex("options").insert(poll.options);
 
