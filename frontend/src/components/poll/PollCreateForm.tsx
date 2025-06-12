@@ -48,7 +48,7 @@ const PollCreateForm: React.FC<PollCreateFormProps> = ({
 
     return (
         <form
-            className={`flex flex-col gap-10 justify-between h-full ${className || ""}`}
+            className={`flex flex-col gap-5 md:gap-10 justify-between h-full ${className || ""}`}
             onSubmit={onSubmit}
         >
             <div className="flex flex-col gap-4 h-full min-h-0">

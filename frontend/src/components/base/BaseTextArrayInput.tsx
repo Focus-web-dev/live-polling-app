@@ -58,16 +58,20 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
         };
 
         return (
-            <div className={`flex flex-row items-center gap-2 min-h-0 ${className || ""}`}>
-                <span className="text-xl font-bold text-white">{index + 1}.</span>
+            <div
+                className={`flex flex-col sm:flex-row sm:items-center gap-2 min-h-0 ${className || ""}`}
+            >
+                <div className="flex flex-row grow items-center gap-2">
+                    <span className="text-lg lg:text-xl font-bold text-white">{index + 1}.</span>
 
-                <BaseInput
-                    id={`${id}-${index}`}
-                    value={itemValue}
-                    onChange={handleChange}
-                    placeholder="Type your option..."
-                    className="w-full"
-                />
+                    <BaseInput
+                        id={`${id}-${index}`}
+                        value={itemValue}
+                        onChange={handleChange}
+                        placeholder="Type your option..."
+                        className="w-full"
+                    />
+                </div>
 
                 <div className="flex flex-row gap-2">
                     <button type="button" className="button outlined" onClick={handleItemRemove}>

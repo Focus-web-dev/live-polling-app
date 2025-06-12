@@ -27,7 +27,7 @@ const BaseInput: React.FC<BaseInputProps> = ({
                 id={id}
                 value={value}
                 onChange={onChange}
-                className="w-full p-3 bg-primary text-white focus:outline-none placeholder-white/40 rounded-lg"
+                className="w-full p-2 md:p-3 bg-primary text-white focus:outline-none placeholder-white/40 rounded-lg"
                 {...rest}
             />
         </div>

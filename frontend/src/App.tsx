@@ -5,7 +5,7 @@ const App = () => {
     const router = createBrowserRouter(pagesData);
 
     return (
-        <main className="flex h-full w-full p-10">
+        <main className="flex h-full w-full p-5 md:p-10">
             <RouterProvider router={router} />
         </main>
     );
