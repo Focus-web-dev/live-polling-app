@@ -1,0 +1,133 @@
+import React from "react";
+import type { InputHTMLAttributes } from "react";
+
+import BaseInput from "./BaseInput";
+
+interface BaseTextArrayInputProps {
+    id: string;
+    value: string[];
+    label?: string;
+    onItemValueChange: (newValue: string, index: number) => void;
+    onItemAdd: () => void;
+    onItemRemove: (index: number) => void;
+    onItemMove: (fromIndex: number, toIndex: number) => void;
+    className: string;
+}
+
+interface ItemInputProps extends InputHTMLAttributes<HTMLInputElement> {
+    id: string;
+    index: number;
+    itemValue: string;
+    onItemInputChange: (newValue: string, index: number) => void;
+    onItemInputRemove: (index: number) => void;
+    onItemInputMove: (fromIndex: number, toIndex: number) => void;
+}
+
+const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
+    id,
+    label,
+    value,
+    className,
+    onItemValueChange,
+    onItemAdd,
+    onItemRemove,
+    onItemMove,
+}) => {
+    const ItemInput = React.memo(function ItemInput({
+        id,
+        index,
+        itemValue,
+        onItemInputChange,
+        onItemInputRemove,
+        onItemInputMove,
+    }: ItemInputProps) {
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            onItemInputChange(e.target.value, index);
+        };
+
+        const handleItemRemove = () => {
+            onItemInputRemove(index);
+        };
+
+        const handleItemMoveUp = () => {
+            onItemInputMove(index, index - 1);
+        };
+
+        const handleItemDown = () => {
+            onItemInputMove(index, index + 1);
+        };
+
+        return (
+            <div className={`flex flex-row items-center gap-2 min-h-0 ${className || ""}`}>
+                <span className="text-xl font-bold text-white">{index + 1}.</span>
+
+                <BaseInput
+                    id={`${id}-${index}`}
+                    value={itemValue}
+                    onChange={handleChange}
+                    placeholder="Type your option..."
+                    className="w-full"
+                />
+
+                <div className="flex flex-row gap-2">
+                    <button type="button" className="button outlined" onClick={handleItemRemove}>
+                        -
+                    </button>
+
+                    <button
+                        type="button"
+                        className="button outlined"
+                        onClick={handleItemMoveUp}
+                        disabled={index === 0}
+                    >
+                        ↑
+                    </button>
+
+                    <button
+                        type="button"
+                        className="button outlined"
+                        onClick={handleItemDown}
+                        disabled={index === value.length - 1}
+                    >
+                        ↓
+                    </button>
+                </div>
+            </div>
+        );
+    });
+
+    return (
+        <div className="flex flex-col gap-4 rounded-lg min-h-0">
+            <div className="flex flex-col gap-2 min-h-0">
+                {label && <p className="text-md font-bold">{label}</p>}
+
+                <div className="flex flex-col gap-4 border-2 border-primary p-5 rounded-xl overflow-auto">
+                    {value.length ? (
+                        <div className="flex flex-col gap-2">
+                            {value.map((itemValue, index) => (
+                                <div key={`${id}-${index}`}>
+                                    <ItemInput
+                                        id={id}
+                                        index={index}
+                                        itemValue={itemValue}
+                                        onItemInputChange={onItemValueChange}
+                                        onItemInputRemove={onItemRemove}
+                                        onItemInputMove={onItemMove}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="font-medium">There no any items yet</p>
+                    )}
+
+                    <button type="button" className="button outlined" onClick={onItemAdd}>
+                        Add new item
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default BaseTextArrayInput;
