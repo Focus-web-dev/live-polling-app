@@ -1,23 +1,14 @@
 import { memo } from "react";
 
-import BaseInput from "../../components/base/BaseInput";
-import BaseTextArrayInput from "../../components/base/BaseTextArrayInput";
+import BaseInput from "../../Base/Input";
+import BaseTextArrayInput from "../../Base/TextArrayInput";
 
-interface PollCreateFormProps {
-    question: string;
-    options: string[];
-    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-    onQuestionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    onOptionValueChange: (index: number, newValue: string) => void;
-    onOptionAdd: () => void;
-    onOptionRemove: (index: number) => void;
-    onOptionMove: (fromIndex: number, toIndex: number) => void;
-    className: string;
-}
+import type { PollCreateFormProps } from "./types";
 
 const PollCreateForm: React.FC<PollCreateFormProps> = ({
     question,
     options,
+    isPending,
     className,
     onSubmit,
     onQuestionChange,
@@ -51,7 +42,7 @@ const PollCreateForm: React.FC<PollCreateFormProps> = ({
                 />
             </div>
 
-            <button className="button" type="submit">
+            <button className="button" type="submit" disabled={isPending}>
                 Submit
             </button>
         </form>

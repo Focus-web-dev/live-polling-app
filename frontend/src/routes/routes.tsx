@@ -1,5 +1,5 @@
-import HomePage from "../pages/HomePage";
-import PollCreatePage from "../pages/poll/PollCreatePage";
+import HomePage from "../pages/Home";
+import PollCreatePage from "../pages/Poll/Create";
 
 const pagesData = [
     {
