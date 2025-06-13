@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import toast from "react-hot-toast";
+
 import API from "../../../services/API";
 import PollCreateForm from "../../../components/Poll/CreateForm";
 import { usePending } from "../../../hooks/usePending";
@@ -57,7 +59,10 @@ const PollCreatePage = () => {
 
         try {
             await API.create("/polls", JSON.stringify(poll));
+            toast.success("Created successfully");
             await navigate("/");
+        } catch {
+            toast.error("An error occured");
         } finally {
             formPending.setPendingStatus(false);
         }

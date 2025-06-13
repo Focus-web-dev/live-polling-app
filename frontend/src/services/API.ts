@@ -12,8 +12,6 @@ class API {
     }
 
     public async create(path: string, body: BodyInit) {
-        console.log(this.baseUrl);
-
         const requestUrl = this.getUrl(path);
 
         const requestOptions: RequestInit = {
@@ -25,11 +23,6 @@ class API {
         };
 
         const response = await fetch(requestUrl, requestOptions);
-
-        if (!response.ok) {
-            throw new Error("API: create failed");
-        }
-
         return response.json();
     }
 
