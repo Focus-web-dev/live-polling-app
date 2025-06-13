@@ -56,7 +56,7 @@ const PollCreatePage = () => {
         formPending.setPendingStatus(true);
 
         try {
-            await API.create("/poll", JSON.stringify(poll));
+            await API.create("/polls", JSON.stringify(poll));
             await navigate("/");
         } finally {
             formPending.setPendingStatus(false);
