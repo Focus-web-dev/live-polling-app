@@ -11,8 +11,32 @@ const PollCreatePage = () => {
         setQuestion(event.target.value);
     };
 
-    const handleOptionsChange = (newOptions: string[]) => {
+    const handleOptionValueChange = (index: number, newValue: string) => {
+        const newOptions = [...options];
+        newOptions[index] = newValue;
         setOptions(newOptions);
+    };
+
+    const handleOptionAdd = () => {
+        setOptions([...options, ""]);
+    };
+
+    const handleOptionRemove = (index: number) => {
+        setOptions([...options.slice(0, index), ...options.slice(index + 1)]);
+    };
+
+    const handleOptionMove = (fromIndex: number, toIndex: number) => {
+        if (fromIndex === toIndex || toIndex < 0) {
+            return;
+        }
+
+        const newValue = [...options];
+        const element = newValue[fromIndex];
+
+        newValue.splice(fromIndex, 1);
+        newValue.splice(toIndex, 0, element);
+
+        setOptions(newValue);
     };
 
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,8 +56,11 @@ const PollCreatePage = () => {
                 <PollCreateForm
                     options={options}
                     question={question}
-                    onChangeQuestion={handleQuestionChange}
-                    onChangeOptions={handleOptionsChange}
+                    onQuestionChange={handleQuestionChange}
+                    onOptionValueChange={handleOptionValueChange}
+                    onOptionAdd={handleOptionAdd}
+                    onOptionRemove={handleOptionRemove}
+                    onOptionMove={handleOptionMove}
                     onSubmit={handleFormSubmit}
                     className="max-h-full min-h-0"
                 />

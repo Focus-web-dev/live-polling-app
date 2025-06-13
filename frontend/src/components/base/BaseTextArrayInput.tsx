@@ -7,7 +7,7 @@ interface BaseTextArrayInputProps {
     id: string;
     value: string[];
     label?: string;
-    onItemValueChange: (newValue: string, index: number) => void;
+    onItemValueChange: (index: number, newValue: string) => void;
     onItemAdd: () => void;
     onItemRemove: (index: number) => void;
     onItemMove: (fromIndex: number, toIndex: number) => void;
@@ -18,88 +18,87 @@ interface ItemInputProps extends InputHTMLAttributes<HTMLInputElement> {
     id: string;
     index: number;
     itemValue: string;
-    onItemInputChange: (newValue: string, index: number) => void;
+    isLast: boolean;
+    onItemInputChange: (index: number, newValue: string) => void;
     onItemInputRemove: (index: number) => void;
     onItemInputMove: (fromIndex: number, toIndex: number) => void;
 }
+
+const ItemInput = React.memo(function ItemInput({
+    id,
+    index,
+    itemValue,
+    isLast,
+    onItemInputChange,
+    onItemInputRemove,
+    onItemInputMove,
+}: ItemInputProps) {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onItemInputChange(index, e.target.value);
+    };
+
+    const handleItemRemove = () => {
+        onItemInputRemove(index);
+    };
+
+    const handleItemMoveUp = () => {
+        onItemInputMove(index, index - 1);
+    };
+
+    const handleItemDown = () => {
+        onItemInputMove(index, index + 1);
+    };
+
+    return (
+        <div className={`flex flex-col sm:flex-row sm:items-center gap-2 min-h-0`}>
+            <div className="flex flex-row grow items-center gap-2">
+                <span className="text-lg lg:text-xl font-bold text-white">{index + 1}.</span>
+
+                <BaseInput
+                    id={`${id}-${index}`}
+                    value={itemValue}
+                    onChange={handleChange}
+                    placeholder="Type your option..."
+                    className="w-full"
+                />
+            </div>
+
+            <div className="flex flex-row gap-2">
+                <button type="button" className="button outlined" onClick={handleItemRemove}>
+                    -
+                </button>
+
+                <button
+                    type="button"
+                    className="button outlined"
+                    onClick={handleItemMoveUp}
+                    disabled={index === 0}
+                >
+                    ↑
+                </button>
+
+                <button
+                    type="button"
+                    className="button outlined"
+                    onClick={handleItemDown}
+                    disabled={isLast}
+                >
+                    ↓
+                </button>
+            </div>
+        </div>
+    );
+});
 
 const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
     id,
     label,
     value,
-    className,
     onItemValueChange,
     onItemAdd,
     onItemRemove,
     onItemMove,
 }) => {
-    const ItemInput = React.memo(function ItemInput({
-        id,
-        index,
-        itemValue,
-        onItemInputChange,
-        onItemInputRemove,
-        onItemInputMove,
-    }: ItemInputProps) {
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            onItemInputChange(e.target.value, index);
-        };
-
-        const handleItemRemove = () => {
-            onItemInputRemove(index);
-        };
-
-        const handleItemMoveUp = () => {
-            onItemInputMove(index, index - 1);
-        };
-
-        const handleItemDown = () => {
-            onItemInputMove(index, index + 1);
-        };
-
-        return (
-            <div
-                className={`flex flex-col sm:flex-row sm:items-center gap-2 min-h-0 ${className || ""}`}
-            >
-                <div className="flex flex-row grow items-center gap-2">
-                    <span className="text-lg lg:text-xl font-bold text-white">{index + 1}.</span>
-
-                    <BaseInput
-                        id={`${id}-${index}`}
-                        value={itemValue}
-                        onChange={handleChange}
-                        placeholder="Type your option..."
-                        className="w-full"
-                    />
-                </div>
-
-                <div className="flex flex-row gap-2">
-                    <button type="button" className="button outlined" onClick={handleItemRemove}>
-                        -
-                    </button>
-
-                    <button
-                        type="button"
-                        className="button outlined"
-                        onClick={handleItemMoveUp}
-                        disabled={index === 0}
-                    >
-                        ↑
-                    </button>
-
-                    <button
-                        type="button"
-                        className="button outlined"
-                        onClick={handleItemDown}
-                        disabled={index === value.length - 1}
-                    >
-                        ↓
-                    </button>
-                </div>
-            </div>
-        );
-    });
-
     return (
         <div className="flex flex-col gap-4 rounded-lg min-h-0">
             <div className="flex flex-col gap-2 min-h-0">
@@ -114,6 +113,7 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
                                         id={id}
                                         index={index}
                                         itemValue={itemValue}
+                                        isLast={index === value.length - 1}
                                         onItemInputChange={onItemValueChange}
                                         onItemInputRemove={onItemRemove}
                                         onItemInputMove={onItemMove}
