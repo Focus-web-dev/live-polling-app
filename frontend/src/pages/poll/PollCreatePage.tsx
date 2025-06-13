@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import PollCreateForm from "../../components/poll/PollCreateForm";
 
@@ -7,44 +7,51 @@ const PollCreatePage = () => {
 
     const [options, setOptions] = useState<string[]>(["Good", "fifty-fifty", "Bad :("]);
 
-    const handleQuestionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleQuestionChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setQuestion(event.target.value);
-    };
+    }, []);
 
-    const handleOptionValueChange = (index: number, newValue: string) => {
-        const newOptions = [...options];
-        newOptions[index] = newValue;
-        setOptions(newOptions);
-    };
+    const handleOptionValueChange = useCallback(
+        (index: number, newValue: string) => {
+            const newOptions = [...options];
+            newOptions[index] = newValue;
+            setOptions(newOptions);
+        },
+        [options]
+    );
 
-    const handleOptionAdd = () => {
+    const handleOptionAdd = useCallback(() => {
         setOptions([...options, ""]);
-    };
+    }, [options]);
 
-    const handleOptionRemove = (index: number) => {
-        setOptions([...options.slice(0, index), ...options.slice(index + 1)]);
-    };
+    const handleOptionRemove = useCallback(
+        (index: number) => {
+            setOptions([...options.slice(0, index), ...options.slice(index + 1)]);
+        },
+        [options]
+    );
 
-    const handleOptionMove = (fromIndex: number, toIndex: number) => {
-        if (fromIndex === toIndex || toIndex < 0) {
-            return;
-        }
+    const handleOptionMove = useCallback(
+        (fromIndex: number, toIndex: number) => {
+            if (fromIndex === toIndex || toIndex < 0) {
+                return;
+            }
 
-        const newValue = [...options];
-        const element = newValue[fromIndex];
+            const newValue = [...options];
+            const element = newValue[fromIndex];
 
-        newValue.splice(fromIndex, 1);
-        newValue.splice(toIndex, 0, element);
+            newValue.splice(fromIndex, 1);
+            newValue.splice(toIndex, 0, element);
 
-        setOptions(newValue);
-    };
+            setOptions(newValue);
+        },
+        [options]
+    );
 
-    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log("FORM SUBMIT");
-        console.log(question);
-        console.log(options);
-    };
+    }, []);
 
     return (
         <div className="flex w-full max-h-full items-center justify-center flex-col gap-4">

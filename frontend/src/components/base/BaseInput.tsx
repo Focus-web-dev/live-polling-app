@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import type { InputHTMLAttributes } from "react";
 
 export interface BaseInputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -34,4 +34,4 @@ const BaseInput: React.FC<BaseInputProps> = ({
     );
 };
 
-export default BaseInput;
+export default memo(BaseInput);

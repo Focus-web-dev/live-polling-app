@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import type { InputHTMLAttributes } from "react";
 
 import BaseInput from "./BaseInput";
@@ -33,21 +33,24 @@ const ItemInput = React.memo(function ItemInput({
     onItemInputRemove,
     onItemInputMove,
 }: ItemInputProps) {
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onItemInputChange(index, e.target.value);
-    };
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            onItemInputChange(index, e.target.value);
+        },
+        [index, onItemInputChange]
+    );
 
-    const handleItemRemove = () => {
+    const handleItemRemove = useCallback(() => {
         onItemInputRemove(index);
-    };
+    }, [index, onItemInputRemove]);
 
-    const handleItemMoveUp = () => {
+    const handleItemMoveUp = useCallback(() => {
         onItemInputMove(index, index - 1);
-    };
+    }, [index, onItemInputMove]);
 
-    const handleItemDown = () => {
+    const handleItemDown = useCallback(() => {
         onItemInputMove(index, index + 1);
-    };
+    }, [index, onItemInputMove]);
 
     return (
         <div className={`flex flex-col sm:flex-row sm:items-center gap-2 min-h-0`}>
