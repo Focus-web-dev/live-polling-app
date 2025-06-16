@@ -2,9 +2,9 @@ import { NavLink } from "react-router-dom";
 
 const HomePage = () => {
     return (
-        <div className="p-10 flex flex-col gap-10">
-            <section className="bg-white w-full p-10 rounded-xl ">
-                <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-col gap-10 p-10">
+            <section className="w-full rounded-xl bg-gray-100 p-10">
+                <div className="flex flex-row items-center justify-between hover:opacity-75">
                     <h3>Poll queue</h3>
                     <NavLink to="/poll/create">Create a poll</NavLink>
                 </div>
@@ -14,7 +14,7 @@ const HomePage = () => {
                 </ul>
             </section>
 
-            <section className="bg-white w-full p-10 rounded-xl">
+            <section className="w-full rounded-xl bg-white p-10">
                 <h3>Live poll</h3>
             </section>
         </div>

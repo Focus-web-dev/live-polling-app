@@ -13,7 +13,7 @@ const BaseInput: React.FC<BaseInputProps> = ({
     return (
         <div className={`flex flex-col gap-2 ${className || ""}`}>
             {label && (
-                <label htmlFor={id} className="text-white text-lg font-medium">
+                <label htmlFor={id} className="text-lg font-medium text-white">
                     {label}
                 </label>
             )}
@@ -21,7 +21,7 @@ const BaseInput: React.FC<BaseInputProps> = ({
                 id={id}
                 value={value}
                 onChange={onChange}
-                className="w-full p-2 md:p-3 bg-primary text-white focus:outline-none placeholder-white/40 rounded-lg"
+                className="bg-primary w-full rounded-lg p-2 text-white placeholder-white/40 focus:outline-none md:p-3"
                 {...rest}
             />
         </div>

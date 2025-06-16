@@ -8,8 +8,8 @@
         "prepare": "husky",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write *",
-        "check-format": "prettier --check *",
+        "format": "prettier --write .",
+        "check-format": "prettier --check .",
         "backend:start": "npm start --prefix backend",
         "backend:dev": "npm run dev --prefix backend",
         "frontend:start": "npm start --prefix frontend",
@@ -25,11 +25,12 @@
         "eslint-plugin-prettier": "^5.x.x",
         "eslint-plugin-react": "^7.x.x",
         "eslint-plugin-react-hooks": "^4.x.x",
-        "prettier": "^3.x.x",
-        "typescript": "^5.8.3",
-        "typescript-eslint": "^8.33.1",
         "husky": "^9.0.11",
-        "lint-staged": "^15.2.7"
+        "lint-staged": "^15.2.7",
+        "prettier": "^3.5.3",
+        "prettier-plugin-tailwindcss": "^0.6.12",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.33.1"
     },
     "lint-staged": {
         "*": [

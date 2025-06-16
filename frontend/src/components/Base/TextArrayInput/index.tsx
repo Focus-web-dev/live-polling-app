@@ -32,9 +32,9 @@ const ItemInput = React.memo(function ItemInput({
     }, [index, onItemInputMove]);
 
     return (
-        <div className={`flex flex-col sm:flex-row sm:items-center gap-2 min-h-0`}>
-            <div className="flex flex-row grow items-center gap-2">
-                <span className="text-lg lg:text-xl font-bold text-white">{index + 1}.</span>
+        <div className={`flex min-h-0 flex-col gap-2 sm:flex-row sm:items-center`}>
+            <div className="flex grow flex-row items-center gap-2">
+                <span className="text-lg font-bold text-white lg:text-xl">{index + 1}.</span>
 
                 <BaseInput
                     id={`${id}-${index}`}
@@ -82,11 +82,11 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
     onItemMove,
 }) => {
     return (
-        <div className="flex flex-col gap-4 rounded-lg min-h-0">
-            <div className="flex flex-col gap-2 min-h-0">
+        <div className="flex min-h-0 flex-col gap-4 rounded-lg">
+            <div className="flex min-h-0 flex-col gap-2">
                 {label && <p className="text-md font-bold">{label}</p>}
 
-                <div className="flex flex-col gap-4 border-2 border-primary p-5 rounded-xl overflow-auto">
+                <div className="border-primary flex flex-col gap-4 overflow-auto rounded-xl border-2 p-5">
                     {value.length ? (
                         <div className="flex flex-col gap-2">
                             {value.map((itemValue, index) => (

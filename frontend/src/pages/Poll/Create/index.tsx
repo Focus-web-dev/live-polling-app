@@ -68,10 +68,10 @@ const PollCreatePage = () => {
         }
     };
     return (
-        <div className="flex w-full max-h-full items-center justify-center flex-col gap-4">
+        <div className="flex max-h-full w-full flex-col items-center justify-center gap-4">
             <h3>Create a new poll</h3>
 
-            <div className="w-full lg:max-w-2/3 bg-gray-100 h-full flex min-h-0 flex-col p-5 md:p-10 rounded-xl gap-5 md:gap-10">
+            <div className="lg:max-w-2/3 flex h-full min-h-0 w-full flex-col gap-5 rounded-xl bg-gray-100 p-5 md:gap-10 md:p-10">
                 <h3>Fill the form</h3>
 
                 <PollCreateForm

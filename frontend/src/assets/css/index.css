@@ -11,7 +11,7 @@
 @layer base {
     html {
         ::-webkit-scrollbar {
-            @apply w-2 bg-white rounded-full;
+            @apply w-2 rounded-full bg-white;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -22,21 +22,21 @@
     body {
         font-family: "Zen Kaku Gothic Antique", sans-serif;
         font-optical-sizing: auto;
-        @apply bg-primary text-white h-screen w-screen overflow-hidden;
+        @apply bg-primary h-screen w-screen overflow-hidden text-white;
     }
 
     #root {
-        @apply max-w-full max-h-full w-full h-full;
+        @apply h-full max-h-full w-full max-w-full;
     }
 }
 
 @layer components {
     h3 {
-        @apply text-2xl md:text-3xl font-bold;
+        @apply text-2xl font-bold md:text-3xl;
     }
 
     button {
-        @apply cursor-pointer font-black text-sm md:text-base;
+        @apply cursor-pointer text-sm font-black md:text-base;
 
         &:disabled {
             @apply cursor-not-allowed;
@@ -44,15 +44,15 @@
     }
 
     .button {
-        @apply rounded-lg p-2 md:p-3 bg-secondary hover:bg-white hover:text-primary transition-colors;
+        @apply bg-secondary hover:text-primary rounded-lg p-2 transition-colors hover:bg-white md:p-3;
 
         &:disabled {
-            @apply bg-white/50 text-primary/50;
+            @apply text-primary/50 bg-white/50;
         }
     }
 
     .button.outlined {
-        @apply bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-white;
+        @apply border-secondary text-secondary hover:bg-secondary border bg-transparent hover:text-white;
 
         &:disabled {
             @apply border-white/50 text-white/50;
