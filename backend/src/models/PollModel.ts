@@ -4,12 +4,19 @@ import { DB_TABLE_NAMES } from "../enums/DB_TABLE_NAMES";
 import PollData from "@shared/interfaces/PollData";
 import PollOption from "@shared/interfaces/PollOption";
 
-class PollModel {
-    public async insert(poll: PollData): Promise<PollData> {
-        await sqliteKnex("polls").insert({ id: poll.id, title: poll.title });
-        await sqliteKnex("options").insert(poll.options);
+type PollDataInsert = Pick<PollData, "id" | "title" | "options">;
 
-        return poll;
+class PollModel {
+    public async insert(poll: PollDataInsert): Promise<PollDataInsert> {
+        return await sqliteKnex.transaction(async (transaction) => {
+            await transaction("polls").insert({ id: poll.id, title: poll.title });
+            await transaction("options").insert(poll.options);
+
+            const insertedPoll = await transaction("polls").where({ id: poll.id }).first();
+            const options = await transaction("options").where({ poll_id: poll.id });
+
+            return { ...insertedPoll, options };
+        });
     }
 
     public async selectAllPolls(): Promise<PollData[]> {
@@ -38,6 +45,23 @@ class PollModel {
         }));
 
         return pollsWithOptions;
+    }
+
+    public async queryNonExpiredPoll(): Promise<PollData | null> {
+        const now = new Date().toISOString();
+        const rawCondition = `datetime(created_at, '+' || expires_in || ' seconds') > datetime(?)`;
+
+        const poll: PollData = await sqliteKnex(DB_TABLE_NAMES.polls)
+            .whereRaw(rawCondition, [now])
+            .orderBy("created_at", "asc")
+            .first();
+
+        if (!poll) {
+            return null;
+        }
+
+        const options = await sqliteKnex(DB_TABLE_NAMES.options).where({ poll_id: poll.id });
+        return { ...poll, options };
     }
 
     public async queryById(id: string) {

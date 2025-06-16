@@ -6,6 +6,8 @@ export async function up(knex: Knex): Promise<void> {
         .createTable(DB_TABLE_NAMES.polls, (table) => {
             table.string("id").primary();
             table.string("title").notNullable();
+            table.integer("expires_in").notNullable().defaultTo(60);
+            table.timestamp("created_at").defaultTo(knex.fn.now());
         })
         .createTable(DB_TABLE_NAMES.options, (table) => {
             table.string("id").primary();
