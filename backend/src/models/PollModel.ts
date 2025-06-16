@@ -53,14 +53,14 @@ class PollModel {
 
         const poll: PollData = await sqliteKnex(DB_TABLE_NAMES.polls)
             .whereRaw(rawCondition, [now])
-            .orderBy("createdAt", "asc")
+            .orderBy("created_at", "asc")
             .first();
 
         if (!poll) {
             return null;
         }
 
-        const options = await sqliteKnex(DB_TABLE_NAMES.options).where({ pollId: poll.id });
+        const options = await sqliteKnex(DB_TABLE_NAMES.options).where({ poll_id: poll.id });
         return { ...poll, options };
     }
 
