@@ -8,6 +8,7 @@ import tsEslint from "typescript-eslint";
 
 export default [
     // --- GLOBAL CONFIGURATION ---
+    { ignores: ["frontend/dist/**"] },
     {
         files: ["**/*"],
         ignores: [
@@ -23,7 +24,7 @@ export default [
             "**/package-lock.json",
             "Dockerfile",
             "docker-compose.yml",
-            "frontend/build/",
+            "frontend/dist/**",
         ],
     },
 
@@ -42,22 +43,23 @@ export default [
         },
         plugins: {
             "@typescript-eslint": tsEslint.plugin,
+            "prettier/prettier": ["error", { endOfLine: "auto" }],
         },
         rules: {
             ...eslintJs.configs.recommended.rules,
-            ...tsEslint.configs.recommended.rules, // Apply recommended TypeScript rules
-            "no-unused-vars": "off", // Disable base ESLint no-unused-vars
+            ...tsEslint.configs.recommended.rules,
+            "no-unused-vars": "off",
             "@typescript-eslint/no-unused-vars": [
                 "warn",
                 { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
             ],
-            "no-undef": "off", // Disable base ESLint no-undef
+            "no-undef": "off",
         },
     },
 
     // --- Prettier Configuration ---
     {
-        files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+        files: ["**/*"],
         plugins: {
             prettier: pluginPrettier,
         },

@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@300;400;500;700;900&display=swap");
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #1e1e1e;
+    --color-secondary: #279af1;
+    --color-gray-100: #2b2b2b;
+    --color-dark-100: #0f0d23;
+}
+
+@layer base {
+    html {
+        ::-webkit-scrollbar {
+            @apply w-2 bg-white rounded-full;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            @apply bg-secondary rounded-full;
+        }
+    }
+
+    body {
+        font-family: "Zen Kaku Gothic Antique", sans-serif;
+        font-optical-sizing: auto;
+        @apply bg-primary text-white h-screen w-screen overflow-hidden;
+    }
+
+    #root {
+        @apply max-w-full max-h-full w-full h-full;
+    }
+}
+
+@layer components {
+    h3 {
+        @apply text-2xl md:text-3xl font-bold;
+    }
+
+    button {
+        @apply cursor-pointer font-black text-sm md:text-base;
+
+        &:disabled {
+            @apply cursor-not-allowed;
+        }
+    }
+
+    .button {
+        @apply rounded-lg p-2 md:p-3 bg-secondary hover:bg-white hover:text-primary transition-colors;
+
+        &:disabled {
+            @apply bg-white/50 text-primary/50;
+        }
+    }
+
+    .button.outlined {
+        @apply bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-white;
+
+        &:disabled {
+            @apply border-white/50 text-white/50;
+        }
+    }
+}
