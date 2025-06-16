@@ -43,7 +43,6 @@ export default [
         },
         plugins: {
             "@typescript-eslint": tsEslint.plugin,
-            "prettier/prettier": ["error", { endOfLine: "auto" }],
         },
         rules: {
             ...eslintJs.configs.recommended.rules,
@@ -62,11 +61,16 @@ export default [
         files: ["**/*"],
         plugins: {
             prettier: pluginPrettier,
+            "prettier/prettier": [
+                "error",
+                {
+                    endOfLine: "auto",
+                },
+            ],
         },
         rules: {
             ...eslintConfigPrettier.rules,
             "prettier/prettier": "error",
-            endOfLine: "off",
         },
     },
 
