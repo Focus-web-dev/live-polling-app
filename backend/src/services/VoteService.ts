@@ -1,73 +1,111 @@
-import { WebSocket, WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
+import type WebSocket from "ws";
 
-import PollData from "@shared/interfaces/PollData";
-import WS_EVENTS from "@shared/constants/WS_EVENTS";
+import WebsocketMessage from "@shared/interfaces/WebsocketMessage";
+import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
 
 import PollModel from "../models/PollModel";
-import OptionModel from "../models/OptionModel";
+import PollData from "@shared/interfaces/PollData";
 
 export default class VoteService {
-    private currentPollId: string | null = null;
+    private currentPoll: PollData | null = null;
     private currentPollTimeout: NodeJS.Timeout | null = null;
     private isActive = false;
+    private connections: Record<string, WebSocket> = {};
 
     private websocketServer: WebSocketServer;
 
     constructor(websocketServer: WebSocketServer) {
         this.websocketServer = websocketServer;
+
+        this.websocketServer.on("connection", async (ws, request) => {
+            const clientIP = request.socket.remoteAddress;
+            console.log("CONNECTION: ", clientIP);
+
+            if (!clientIP) {
+                console.log("Client ID is undefined, close connection...");
+                ws.close();
+
+                return;
+            }
+
+            this.connections[clientIP] = ws;
+
+            if (this.currentPoll && this.isActive) {
+                const actualMessage = JSON.stringify({
+                    event: WS_EVENTS.SWITCH_POLL,
+                    data: this.currentPoll,
+                });
+
+                ws.send(actualMessage);
+            }
+
+            ws.on("message", (message) => this.handleMessage(message));
+            ws.on("close", () => this.handleClose(clientIP));
+        });
     }
 
-    public async start() {
+    public async startVote() {
         const nonExpiredPoll = await PollModel.queryNonExpiredPoll();
 
         if (!nonExpiredPoll) {
-            this.currentPollId = null;
+            this.clearCurrentPoll();
             this.isActive = false;
-            this.broadcastQueueEnd();
+            this.broadcastMessage({ event: WS_EVENTS.POLL_QUEUE_END });
             return;
         }
 
-        this.currentPollId = nonExpiredPoll.id;
+        this.currentPoll = nonExpiredPoll;
         this.isActive = true;
 
-        this.broadcastPoll(nonExpiredPoll);
+        this.broadcastMessage({ event: WS_EVENTS.SWITCH_POLL, data: nonExpiredPoll });
 
-        const now = new Date();
-        const createdAtMilliseconds = new Date(nonExpiredPoll.createdAt).getTime();
-        const expiresInMilliseconds = Number(nonExpiredPoll.expiresIn) * 1000;
+        const expiresInMs = Number(nonExpiredPoll.expires_in) * 1000;
 
-        const expiresAtMilliseconds = createdAtMilliseconds + expiresInMilliseconds;
+        console.log("DELAY: ", expiresInMs);
 
-        const delay = Math.max(0, expiresAtMilliseconds - now.getTime());
+        if (this.currentPollTimeout) {
+            clearTimeout(this.currentPollTimeout);
+        }
 
-        this.currentPollTimeout = setTimeout(async () => await this.start(), delay);
+        this.currentPollTimeout = setTimeout(async () => {
+            console.log("TIMED OUT");
+            await PollModel.updatePoll(nonExpiredPoll.id, { is_expired: true });
+            this.clearCurrentPoll();
+            await this.startVote();
+        }, expiresInMs);
     }
 
-    private broadcastPoll(poll: PollData) {
-        const message = JSON.stringify({ event: WS_EVENTS.NEXT_POLL, data: poll });
+    private clearCurrentPoll() {
+        this.currentPoll = null;
 
-        this.websocketServer.clients.forEach((client) => {
-            if (client.readyState !== WebSocket.OPEN) {
+        if (this.currentPollTimeout) {
+            clearTimeout(this.currentPollTimeout);
+            this.currentPollTimeout = null;
+        }
+    }
+
+    private handleClose(ip: string) {
+        delete this.connections[ip];
+        console.log("Connection ", ip, " removed!");
+    }
+
+    private async handleMessage(bytes: WebSocket.RawData) {
+        const parsed: WebsocketMessage = JSON.parse(bytes.toString());
+
+        switch (parsed.event) {
+            case WS_EVENTS.VOTE_POLL:
+                console.log("VOTE POLL OPTION: ", parsed.data);
                 return;
-            }
-
-            client.send(message);
-        });
+            case WS_EVENTS.QUEUE_POLL:
+                await this.startVote();
+        }
     }
 
-    private broadcastQueueEnd() {
-        const message = JSON.stringify({ event: WS_EVENTS.QUEUE_END });
-
-        this.websocketServer.clients.forEach((client) => {
-            if (client.readyState !== WebSocket.OPEN) {
-                return;
-            }
-
-            client.send(message);
+    private broadcastMessage(message: WebsocketMessage) {
+        Object.keys(this.connections).forEach((connection) => {
+            const connectionWebsocket = this.connections[connection];
+            connectionWebsocket.send(JSON.stringify(message));
         });
-    }
-
-    public async handleVoteMessage(optionId: string) {
-        return await OptionModel.incrementVote(optionId);
     }
 }

@@ -9,11 +9,13 @@ type PollDataInsert = Pick<PollData, "id" | "title" | "options">;
 class PollModel {
     public async insert(poll: PollDataInsert): Promise<PollDataInsert> {
         return await sqliteKnex.transaction(async (transaction) => {
-            await transaction("polls").insert({ id: poll.id, title: poll.title });
-            await transaction("options").insert(poll.options);
+            await transaction(DB_TABLE_NAMES.polls).insert({ id: poll.id, title: poll.title });
+            await transaction(DB_TABLE_NAMES.options).insert(poll.options);
 
-            const insertedPoll = await transaction("polls").where({ id: poll.id }).first();
-            const options = await transaction("options").where({ poll_id: poll.id });
+            const insertedPoll = await transaction(DB_TABLE_NAMES.polls)
+                .where({ id: poll.id })
+                .first();
+            const options = await transaction(DB_TABLE_NAMES.options).where({ poll_id: poll.id });
 
             return { ...insertedPoll, options };
         });
@@ -48,11 +50,8 @@ class PollModel {
     }
 
     public async queryNonExpiredPoll(): Promise<PollData | null> {
-        const now = new Date().toISOString();
-        const rawCondition = `datetime(created_at, '+' || expires_in || ' seconds') > datetime(?)`;
-
         const poll: PollData = await sqliteKnex(DB_TABLE_NAMES.polls)
-            .whereRaw(rawCondition, [now])
+            .where("is_expired", false)
             .orderBy("created_at", "asc")
             .first();
 
@@ -69,6 +68,17 @@ class PollModel {
         const options = await sqliteKnex(DB_TABLE_NAMES.options).where({ poll_id: id });
 
         return { ...poll, options };
+    }
+
+    public async updatePoll(id: string, data: Partial<PollData>): Promise<PollData> {
+        return await sqliteKnex.transaction(async (transaction) => {
+            await transaction("polls").where({ id }).update(data);
+
+            const updatedPoll = await transaction("polls").where({ id }).first();
+            const options = await transaction("options").where({ poll_id: id });
+
+            return { ...updatedPoll, options };
+        });
     }
 }
 

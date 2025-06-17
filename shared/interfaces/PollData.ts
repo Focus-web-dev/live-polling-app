@@ -4,6 +4,7 @@ export default interface PollData {
     id: string;
     title: string;
     options: PollOption[];
-    createdAt: string;
-    expiresIn: string;
+    is_expired: boolean;
+    expires_in: number;
+    created_at: string;
 }
