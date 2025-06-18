@@ -4,20 +4,17 @@ import { sqliteKnex } from "../config/sqliteKnex";
 import { DB_TABLE_NAMES } from "../enums/DB_TABLE_NAMES";
 
 class OptionModel {
-    public async queryById(id: string) {
-        const option: PollOption = await sqliteKnex(DB_TABLE_NAMES.options)
-            .where({ poll_id: id })
-            .first();
-        return option;
+    public async queryById(optionId: string): Promise<PollOption> {
+        return await sqliteKnex(DB_TABLE_NAMES.options).where({ id: optionId }).first();
     }
 
-    public async incrementVote(id: string) {
-        await sqliteKnex(DB_TABLE_NAMES.options)
-            .where({ poll_id: id })
-            .first()
-            .increment("votes", 1);
+    public async queryByPollId(id: string): Promise<PollOption[]> {
+        return await sqliteKnex(DB_TABLE_NAMES.options).where({ poll_id: id });
+    }
 
-        return id;
+    public async incrementVote(optionId: string): Promise<PollOption> {
+        await sqliteKnex(DB_TABLE_NAMES.options).where({ id: optionId }).increment("votes", 1);
+        return await this.queryById(optionId);
     }
 }
 

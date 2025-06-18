@@ -26,11 +26,23 @@ class API {
         return response.json();
     }
 
-    public read() {}
+    public async read(path: string) {
+        const requestUrl = this.getUrl(path);
 
-    public update() {}
+        const requestOptions: RequestInit = {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
 
-    public delete() {}
+        const response = await fetch(requestUrl, requestOptions);
+        return response.json();
+    }
+
+    public async update() {}
+
+    public async delete() {}
 }
 
 export default new API(BASE_URL);

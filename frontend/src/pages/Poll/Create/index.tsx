@@ -67,11 +67,12 @@ const PollCreatePage = () => {
             formPending.setPendingStatus(false);
         }
     };
+
     return (
         <div className="flex max-h-full w-full flex-col items-center justify-center gap-4">
             <h3>Create a new poll</h3>
 
-            <div className="lg:max-w-2/3 flex h-full min-h-0 w-full flex-col gap-5 rounded-xl bg-gray-100 p-5 md:gap-10 md:p-10">
+            <div className="lg:max-w-2/3 segment flex h-full min-h-0 w-full flex-col gap-5 md:gap-10">
                 <h3>Fill the form</h3>
 
                 <PollCreateForm

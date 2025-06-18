@@ -11,7 +11,7 @@
 @layer base {
     html {
         ::-webkit-scrollbar {
-            @apply w-2 rounded-full bg-white;
+            @apply h-2 w-2 rounded-full bg-white;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -35,19 +35,11 @@
         @apply text-2xl font-bold md:text-3xl;
     }
 
-    button {
-        @apply cursor-pointer text-sm font-black md:text-base;
-
-        &:disabled {
-            @apply cursor-not-allowed;
-        }
-    }
-
     .button {
-        @apply bg-secondary hover:text-primary rounded-lg p-2 transition-colors hover:bg-white md:p-3;
+        @apply bg-secondary hover:text-primary cursor-pointer rounded-lg p-2 text-sm font-black transition-colors hover:bg-white md:p-3 md:text-base;
 
         &:disabled {
-            @apply text-primary/50 bg-white/50;
+            @apply text-primary/50 cursor-not-allowed bg-white/50;
         }
     }
 
@@ -56,6 +48,41 @@
 
         &:disabled {
             @apply border-white/50 text-white/50;
+        }
+    }
+
+    .segment {
+        @apply rounded-xl bg-gray-100 p-5 md:p-10;
+    }
+}
+
+@layer animations {
+    .lazy-loading {
+        animation: lazy-loading 1s ease-in-out 0s infinite reverse;
+        -webkit-animation: lazy-loading 1s ease-in-out 0s infinite reverse;
+    }
+
+    @keyframes lazy-loading {
+        0% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.5;
+        }
+    }
+
+    @-webkit-keyframes lazy-loading {
+        0% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.5;
         }
     }
 }

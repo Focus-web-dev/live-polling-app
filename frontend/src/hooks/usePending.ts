@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export function usePending() {
-    const [isPending, setIsPending] = useState(false);
+export function usePending(defaultState = false) {
+    const [isPending, setIsPending] = useState(defaultState);
 
     const setPendingStatus = (status: boolean) => setIsPending(status);
 

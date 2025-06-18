@@ -49,7 +49,7 @@ class PollModel {
         return pollsWithOptions;
     }
 
-    public async queryNonExpiredPoll(): Promise<PollData | null> {
+    public async queryNonExpiredPoll(): Promise<Exclude<PollData, "options"> | null> {
         const poll: PollData = await sqliteKnex(DB_TABLE_NAMES.polls)
             .where("is_expired", false)
             .orderBy("created_at", "asc")
@@ -59,8 +59,7 @@ class PollModel {
             return null;
         }
 
-        const options = await sqliteKnex(DB_TABLE_NAMES.options).where({ poll_id: poll.id });
-        return { ...poll, options };
+        return { ...poll };
     }
 
     public async queryById(id: string) {
