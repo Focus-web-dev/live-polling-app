@@ -9,6 +9,7 @@ import type PollOption from "@shared/interfaces/PollOption";
 const WS_BASE_URL: string = import.meta.env.VITE_WS_BASE_URL || "";
 
 const useVoteWebsocket = () => {
+    const [pollQueue, setPollQueue] = useState<Exclude<PollData, "options">[]>([]);
     const [currentPoll, setCurrentPoll] = useState<Exclude<PollData, "options"> | null>(null);
     const [currentPollOptions, setCurrentPollOptions] = useState<PollOption[]>([]);
 
@@ -17,28 +18,30 @@ const useVoteWebsocket = () => {
         setCurrentPollOptions([]);
     };
 
+    const handleClose = () => {
+        console.log("CLOSE");
+    };
+
     const handleMessage = (event: WebSocketEventMap["message"]) => {
         const parsed: WebsocketMessage = JSON.parse(event.data);
+
+        console.log("MESSAGE: ", parsed.event);
 
         if (parsed.event === WS_EVENTS.SWITCH_POLL) {
             if (!parsed.data) {
                 clearState();
-                return;
             }
 
             const messageData: { poll: Exclude<PollData, "options">; options: PollOption[] } =
                 parsed.data;
 
+            console.log("POLL: ", messageData.poll);
+
             setCurrentPoll(messageData.poll);
             setCurrentPollOptions(messageData.options);
-            return;
         }
 
-        if (parsed.event === WS_EVENTS.UPDATE_OPTION) {
-            if (!parsed.data) {
-                return;
-            }
-
+        if (parsed.event === WS_EVENTS.UPDATE_OPTION && parsed.data) {
             const optionData: PollOption = parsed.data;
 
             const newOptionsArray = [...currentPollOptions];
@@ -47,9 +50,14 @@ const useVoteWebsocket = () => {
             setCurrentPollOptions(newOptionsArray);
         }
 
-        if (parsed.event === WS_EVENTS.POLL_QUEUE_END) {
-            clearState();
-            return;
+        if (parsed.event === WS_EVENTS.UPDATE_POLL_QUEUE) {
+            const pollQueue: Exclude<PollData, "options">[] = parsed.data;
+            if (!pollQueue || !pollQueue.length) {
+                setPollQueue([]);
+                clearState();
+            }
+
+            setPollQueue(parsed.data);
         }
 
         return;
@@ -58,10 +66,12 @@ const useVoteWebsocket = () => {
     const websocketOptions: Options = {
         share: true,
         onMessage: handleMessage,
+        onClose: handleClose,
+        shouldReconnect: () => true,
     };
 
     const websocket = useWebSocket(WS_BASE_URL, websocketOptions);
-    return { websocket, currentPoll, currentPollOptions };
+    return { websocket, pollQueue, currentPoll, currentPollOptions };
 };
 
 export default useVoteWebsocket;

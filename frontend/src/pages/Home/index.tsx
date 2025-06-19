@@ -8,7 +8,6 @@ import useVoteWebsocket from "../../hooks/useVoteWebsocket";
 import type { PollOptionProps } from "./types";
 import type WebsocketMessage from "@shared/interfaces/WebsocketMessage";
 import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
-import { usePending } from "../../hooks/usePending";
 
 const HomePage = () => {
     const PollOption = React.memo(function PollOption({
@@ -47,28 +46,7 @@ const HomePage = () => {
         );
     });
 
-    const [polls, setPolls] = useState<PollData[]>([]);
-    const pollsPending = usePending(true);
-
-    useEffect(() => {
-        const fetchPolls = async () => {
-            try {
-                const pollsResponse: PollData[] = await API.read("/polls");
-
-                if (!pollsResponse || !pollsResponse.length) {
-                    return;
-                }
-
-                setPolls(pollsResponse);
-            } finally {
-                pollsPending.setPendingStatus(false);
-            }
-        };
-
-        fetchPolls();
-    }, []);
-
-    const { currentPoll, currentPollOptions, websocket } = useVoteWebsocket();
+    const { pollQueue, currentPoll, currentPollOptions, websocket } = useVoteWebsocket();
 
     const totalVotes = useMemo(() => {
         if (!currentPollOptions || !currentPollOptions.length) {
@@ -122,19 +100,13 @@ const HomePage = () => {
                     </div>
 
                     <div className="bg-primary mx-2 h-full max-h-full min-h-0 w-full overflow-x-auto rounded-xl p-5">
-                        {pollsPending.isPending || !polls.length ? (
-                            pollsPending.isPending ? (
-                                <div className="lazy-loading flex h-full w-full items-center justify-center rounded-xl bg-gray-100"></div>
-                            ) : (
-                                <div className="flex h-full w-full items-center justify-center rounded-xl">
-                                    <p className="text-xl font-medium">
-                                        There no any polls in queue
-                                    </p>
-                                </div>
-                            )
+                        {!pollQueue.length ? (
+                            <div className="flex h-full w-full items-center justify-center rounded-xl">
+                                <p className="text-xl font-medium">There no any polls in queue</p>
+                            </div>
                         ) : (
                             <ul className="flex h-full flex-row gap-5">
-                                {polls.map((poll, index) => (
+                                {pollQueue.map((poll, index) => (
                                     <li
                                         key={poll.id}
                                         className="segment flex shrink-0 flex-col gap-2 bg-gray-100 p-4"

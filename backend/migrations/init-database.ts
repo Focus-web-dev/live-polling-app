@@ -3,14 +3,14 @@ import { DB_TABLE_NAMES } from "../src/enums/DB_TABLE_NAMES";
 
 export async function up(knex: Knex): Promise<void> {
     return knex.schema
-        .createTable(DB_TABLE_NAMES.polls, (table) => {
+        .createTable(DB_TABLE_NAMES.POLLS, (table) => {
             table.string("id").primary();
             table.string("title").notNullable();
             table.boolean("is_expired").notNullable().defaultTo(false);
             table.integer("expires_in").notNullable().defaultTo(60);
             table.timestamp("created_at").defaultTo(knex.fn.now());
         })
-        .createTable(DB_TABLE_NAMES.options, (table) => {
+        .createTable(DB_TABLE_NAMES.OPTIONS, (table) => {
             table.string("id").primary();
             table
                 .string("poll_id")
@@ -25,6 +25,6 @@ export async function up(knex: Knex): Promise<void> {
 
 export async function down(knex: Knex): Promise<void> {
     return knex.schema
-        .dropTableIfExists(DB_TABLE_NAMES.options)
-        .dropTableIfExists(DB_TABLE_NAMES.polls);
+        .dropTableIfExists(DB_TABLE_NAMES.OPTIONS)
+        .dropTableIfExists(DB_TABLE_NAMES.POLLS);
 }

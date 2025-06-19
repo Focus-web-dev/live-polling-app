@@ -1,10 +1,10 @@
-import knex from "knex";
+import knex, { Knex } from "knex";
 import path from "path";
 
-const databaseFileName = path.join(process.cwd(), "./data/database.sqlite");
+const databaseFilePath: string = path.join(process.cwd(), "./data/database.sqlite");
 
-export const sqliteKnex = knex({
+export const sqliteKnex: Knex = knex({
     client: "sqlite3",
-    connection: { filename: databaseFileName },
+    connection: { filename: databaseFilePath },
     useNullAsDefault: true,
 });

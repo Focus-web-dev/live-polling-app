@@ -11,6 +11,4 @@ const server = app.listen(PORT, () => {
 });
 
 const websocketServer = new WebSocketServer({ server });
-const PollVoteService = new VoteService(websocketServer);
-
-PollVoteService.startVote();
+new VoteService(websocketServer);
