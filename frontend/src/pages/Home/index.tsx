@@ -1,11 +1,15 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
-import useVoteWebsocket from "../../hooks/useVoteWebsocket";
+import useVoteWebsocket from "@/hooks/useVoteWebsocket";
+
+import BaseIcon from "@/components/Base/Icon";
+import BaseTimer from "@/components/Base/Timer/BaseTimer";
+
 import type { LivePollProps, PollOptionProps, PollQueueProps } from "./types";
+
 import type WebsocketMessage from "@shared/interfaces/WebsocketMessage";
 import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
-import BaseTimer from "../../components/Base/Timer/BaseTimer";
 
 const PollOption: React.FC<PollOptionProps> = React.memo(function PollOption({
     index,
@@ -13,6 +17,7 @@ const PollOption: React.FC<PollOptionProps> = React.memo(function PollOption({
     percentage,
     onVote,
     disabled,
+    isVoted,
 }) {
     const handleClick = () => {
         if (!disabled) {
@@ -38,19 +43,29 @@ const PollOption: React.FC<PollOptionProps> = React.memo(function PollOption({
                 aria-label={`Vote for option ${option.text}`}
                 tabIndex={0}
                 disabled={disabled}
-                className="bg-primary group relative flex w-full cursor-pointer flex-row items-center justify-between rounded-xl px-4 text-start"
+                className="bg-primary group relative flex w-full cursor-pointer flex-row items-center justify-between rounded-xl px-4 text-start disabled:cursor-default"
             >
-                <span>{option.text}</span>
+                <div className="flex flex-row items-center gap-2">
+                    <span>{option.text}</span>
+                    {isVoted && <BaseIcon icon="tick" className="h-[1em] w-[1em] text-green-400" />}
+                </div>
 
                 <div className="flex flex-row items-center gap-4">
                     <span className="text-white/50">{option.votes} votes</span>
                     <span>{percentage}%</span>
                 </div>
 
-                <div
-                    className="bg-secondary absolute left-0 top-0 h-full rounded-xl opacity-25 transition-all group-hover:!w-full group-hover:opacity-50"
-                    style={{ width: `${percentage}%` }}
-                ></div>
+                {!disabled ? (
+                    <div
+                        className="bg-secondary absolute left-0 top-0 h-full rounded-xl opacity-25 transition-all group-hover:!w-full group-hover:opacity-50"
+                        style={{ width: `${percentage}%` }}
+                    ></div>
+                ) : (
+                    <div
+                        className="bg-secondary absolute left-0 top-0 h-full rounded-xl opacity-25 transition-all"
+                        style={{ width: `${percentage}%` }}
+                    ></div>
+                )}
             </button>
         </div>
     );
@@ -99,13 +114,15 @@ const PollQueue: React.FC<PollQueueProps> = React.memo(function PollQueue({ poll
     );
 });
 
-const LivePoll: React.FC<LivePollProps> = React.memo(function LivePoll({
+const LivePoll: React.FC<LivePollProps & {}> = React.memo(function LivePoll({
     currentPoll,
     currentPollOptions,
     votePercentageMap,
     totalVotes,
     onVote,
     currentPollExpiresAt,
+    votedOptionId,
+    hasVoted,
 }) {
     return (
         <section className="segment flex h-3/5 w-full flex-col gap-5">
@@ -129,7 +146,8 @@ const LivePoll: React.FC<LivePollProps> = React.memo(function LivePoll({
                                         index={index}
                                         percentage={votePercentageMap[option.id]}
                                         onVote={onVote}
-                                        disabled={!currentPoll}
+                                        disabled={hasVoted}
+                                        isVoted={votedOptionId === option.id}
                                     />
                                 </li>
                             ))}
@@ -154,22 +172,25 @@ const LivePoll: React.FC<LivePollProps> = React.memo(function LivePoll({
 const HomePage: React.FC = () => {
     const { pollQueue, currentPoll, currentPollOptions, websocket, currentPollExpiresAt } =
         useVoteWebsocket();
+    const [votedOptionId, setVotedOptionId] = useState<string | null>(null);
+    const hasVoted = useMemo(() => !!votedOptionId, [votedOptionId]);
+
+    useEffect(() => {
+        setVotedOptionId(null);
+    }, [currentPoll]);
 
     const totalVotes = useMemo(() => {
         if (!currentPollOptions || !currentPollOptions.length) {
             return 0;
         }
-
         return currentPollOptions.reduce((sum, option) => sum + option.votes, 0);
     }, [currentPollOptions]);
 
     const votePercentageMap = useMemo(() => {
         const map: Record<string, string> = {};
-
         if (!currentPollOptions || !currentPollOptions.length) {
             return map;
         }
-
         currentPollOptions.forEach((option) => {
             if (option.votes === 0) {
                 map[option.id] = "0";
@@ -181,13 +202,17 @@ const HomePage: React.FC = () => {
     }, [currentPollOptions, totalVotes]);
 
     const handleOptionVote = (optionId: string) => {
-        if (!currentPoll) {
+        if (!currentPoll || hasVoted) {
             return;
         }
+
+        setVotedOptionId(optionId);
+
         const message: WebsocketMessage = {
             event: WS_EVENTS.VOTE_POLL,
             data: { id: optionId, poll_id: currentPoll.id },
         };
+
         websocket.sendJsonMessage(message);
     };
 
@@ -201,6 +226,8 @@ const HomePage: React.FC = () => {
                 totalVotes={totalVotes}
                 onVote={handleOptionVote}
                 currentPollExpiresAt={currentPollExpiresAt}
+                votedOptionId={votedOptionId}
+                hasVoted={hasVoted}
             />
         </div>
     );

@@ -4,14 +4,20 @@ import type WebSocket from "ws";
 import WebsocketMessage from "@shared/interfaces/WebsocketMessage";
 import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
 
-import PollService from "./PollService";
+import PollService from "../services/PollService";
 import OptionModel from "../models/OptionModel";
 import PollData from "@shared/interfaces/PollData";
 import PollOption from "@shared/interfaces/PollOption";
 
+type PollVoteManagerEvents = {
+    [WS_EVENTS.QUEUE_POLL]: { poll: Omit<PollData, "options"> };
+};
+
 const RETRY_INTERVAL = 5000;
 
-export default class VoteService {
+let pollVoteManager: PollVoteManager | null = null;
+
+class PollVoteManager {
     private pollQueue: Omit<PollData, "options">[] = [];
     private currentPoll: Omit<PollData, "options"> | null = null;
     private currentPollOptions: PollOption[] | null = null;
@@ -63,7 +69,21 @@ export default class VoteService {
             ws.on("close", () => this.handleClose(clientIP));
         });
 
+        this.websocketServer.on(
+            WS_EVENTS.QUEUE_POLL,
+            (data: PollVoteManagerEvents[typeof WS_EVENTS.QUEUE_POLL]) => {
+                this.setPollQueue([...this.pollQueue, data.poll]);
+            }
+        );
+
         this.checkAndStartNextPoll();
+    }
+
+    public emitEvent<K extends keyof PollVoteManagerEvents>(
+        eventName: K,
+        data: PollVoteManagerEvents[K]
+    ) {
+        return this.websocketServer.emit(eventName, data);
     }
 
     private setPollQueue(newPollQueue: Omit<PollData, "options">[]): void {
@@ -74,13 +94,15 @@ export default class VoteService {
 
     private async checkAndStartNextPoll(): Promise<void> {
         const queue = await PollService.getNonExpired();
-        if (!queue || queue.length === 0) {
+
+        if (!queue || !queue.length) {
             if (!this.pollCheckInterval) {
                 this.pollCheckInterval = setInterval(
                     () => this.checkAndStartNextPoll(),
                     RETRY_INTERVAL
                 );
             }
+
             return;
         }
 
@@ -123,11 +145,7 @@ export default class VoteService {
         }
 
         await PollService.update(this.currentPoll.id, { is_expired: true });
-
-        this.currentPoll = null;
-        this.currentPollOptions = null;
-        this.currentPollExpiresAt = null;
-        this.isActive = false;
+        this.clearState();
 
         this.checkAndStartNextPoll();
     }
@@ -163,6 +181,9 @@ export default class VoteService {
 
     private async handleMessage(bytes: WebSocket.RawData): Promise<void> {
         const parsed: WebsocketMessage = JSON.parse(bytes.toString());
+
+        console.log("PARSED: ", parsed);
+
         if (parsed.event === WS_EVENTS.VOTE_POLL) {
             await this.handleVote(parsed.data.id);
             return;
@@ -170,8 +191,6 @@ export default class VoteService {
     }
 
     private broadcastMessage(message: WebsocketMessage): void {
-        console.log("BROADCAST MESSAGE: ", message);
-
         Object.keys(this.connections).forEach((connection) => {
             const connectionWebsocket = this.connections[connection];
             connectionWebsocket.send(JSON.stringify(message));
@@ -183,3 +202,12 @@ export default class VoteService {
         this.connections = {};
     }
 }
+
+export const initPollVoteManager = (websocketServer: WebSocketServer) => {
+    pollVoteManager = new PollVoteManager(websocketServer);
+    return pollVoteManager;
+};
+
+export const getPollVoteManager = () => {
+    return pollVoteManager;
+};

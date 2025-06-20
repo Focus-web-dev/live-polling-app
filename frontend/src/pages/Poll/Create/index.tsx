@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 
-import API from "../../../services/API";
-import PollCreateForm from "../../../components/Poll/CreateForm";
-import { usePending } from "../../../hooks/usePending";
+import API from "@/services/API";
+import PollCreateForm from "@/components/Poll/CreateForm";
+import { usePending } from "@/hooks/usePending";
 
 const PollCreatePage: React.FC = () => {
     const [question, setQuestion] = useState<string>("How is your day?");

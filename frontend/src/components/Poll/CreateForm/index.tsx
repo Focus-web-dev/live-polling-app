@@ -1,7 +1,7 @@
 import { memo } from "react";
 
-import BaseInput from "../../Base/Input";
-import BaseTextArrayInput from "../../Base/TextArrayInput";
+import BaseInput from "@/components/Base/Input";
+import BaseTextArrayInput from "@/components/Base/TextArrayInput";
 
 import type { PollCreateFormProps } from "./types";
 

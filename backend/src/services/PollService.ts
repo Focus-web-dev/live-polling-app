@@ -6,6 +6,9 @@ import OptionModel from "../models/OptionModel";
 import PollOption from "@shared/interfaces/PollOption";
 import PollData from "@shared/interfaces/PollData";
 
+import { getPollVoteManager } from "../managers/PollVoteManager";
+import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
+
 class PollService {
     public async create(title: string, options: string[]): Promise<PollData> {
         const id = uuid();
@@ -23,6 +26,13 @@ class PollService {
         }));
 
         await Promise.all(optionInserts.map((opt) => OptionModel.insert(opt)));
+
+        const pollVoteManager = getPollVoteManager();
+
+        if (pollVoteManager) {
+            pollVoteManager.emitEvent(WS_EVENTS.QUEUE_POLL, { poll });
+        }
+
         return { ...poll, options: optionInserts };
     }
 

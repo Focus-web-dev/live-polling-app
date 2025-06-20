@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-import { formatTime } from "../../../utils/formatTime";
+import { formatTime } from "@/utils/formatTime";
 
 import type { BaseTimerProps } from "./types";
 

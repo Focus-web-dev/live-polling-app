@@ -5,8 +5,9 @@ export interface PollOptionProps {
     index: number;
     option: PollOption;
     percentage: string;
-    disabled?: boolean;
+    isVoted: boolean;
     onVote: (id: string) => void;
+    disabled?: boolean;
 }
 
 export interface PollQueueProps {
@@ -20,4 +21,6 @@ export interface LivePollProps {
     totalVotes: number;
     currentPollExpiresAt: number | null;
     onVote: (optionId: string) => void;
+    votedOptionId?: string | null;
+    hasVoted?: boolean;
 }

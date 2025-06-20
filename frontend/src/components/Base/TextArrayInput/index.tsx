@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import BaseInput from "../Input";
+import BaseInput from "@/components/Base/Input";
 import type { BaseTextArrayInputProps, ItemInputProps } from "./types";
 
 const ItemInput = React.memo(function ItemInput({

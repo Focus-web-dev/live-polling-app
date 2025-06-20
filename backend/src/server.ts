@@ -2,7 +2,7 @@ require("module-alias/register");
 import { WebSocketServer } from "ws";
 
 import app from "./app";
-import VoteService from "./services/VoteService";
+import { initPollVoteManager } from "./managers/PollVoteManager";
 
 const PORT = 5000;
 
@@ -11,4 +11,4 @@ const server = app.listen(PORT, () => {
 });
 
 const websocketServer = new WebSocketServer({ server });
-new VoteService(websocketServer);
+initPollVoteManager(websocketServer);

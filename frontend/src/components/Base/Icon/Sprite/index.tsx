@@ -24,6 +24,18 @@ const BaseIconSprite = () => {
                     d="M10 10.5c-.09 0-.18-.02-.26-.07l-2.5-1.5A.495.495 0 0 1 7 8.5v-4c0-.28.22-.5.5-.5s.5.22.5.5v3.72l2.26 1.35a.502.502 0 0 1-.26.93Z"
                 />
             </symbol>
+
+            <symbol id="tick" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="10" fill="currentColor" fillOpacity="0.2" />
+                <path
+                    d="M6 10.5L9 13.5L14 8.5"
+                    stroke="currentColor"
+                    fill="none"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+            </symbol>
         </svg>
     );
 };
