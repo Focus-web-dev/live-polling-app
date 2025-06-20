@@ -138,6 +138,7 @@ export default class VoteService {
         this.currentPollOptions = null;
         this.currentPollExpiresAt = null;
         this.isActive = false;
+
         if (this.pollTimeout) {
             clearTimeout(this.pollTimeout);
             this.pollTimeout = null;

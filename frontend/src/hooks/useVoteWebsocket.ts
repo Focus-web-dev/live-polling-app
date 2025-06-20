@@ -1,77 +1,97 @@
+import { useState } from "react";
 import useWebSocket, { type Options } from "react-use-websocket";
 
 import type WebsocketMessage from "@shared/interfaces/WebsocketMessage";
 import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
-import { useState } from "react";
 import type PollData from "@shared/interfaces/PollData";
 import type PollOption from "@shared/interfaces/PollOption";
 
 const WS_BASE_URL: string = import.meta.env.VITE_WS_BASE_URL || "";
 
-const useVoteWebsocket = () => {
+type UseVoteWebsocketReturn = {
+    websocket: ReturnType<typeof useWebSocket>;
+    pollQueue: Exclude<PollData, "options">[];
+    currentPoll: Exclude<PollData, "options"> | null;
+    currentPollOptions: PollOption[];
+    currentPollExpiresAt: number | null;
+};
+
+const useVoteWebsocket = (): UseVoteWebsocketReturn => {
     const [pollQueue, setPollQueue] = useState<Exclude<PollData, "options">[]>([]);
     const [currentPoll, setCurrentPoll] = useState<Exclude<PollData, "options"> | null>(null);
     const [currentPollOptions, setCurrentPollOptions] = useState<PollOption[]>([]);
+    const [currentPollExpiresAt, setCurrentPollExpiresAt] = useState<number | null>(null);
 
     const clearState = () => {
         setCurrentPoll(null);
         setCurrentPollOptions([]);
+        setCurrentPollExpiresAt(null);
     };
 
-    const handleClose = () => {
-        console.log("CLOSE");
+    const handleSwitchPoll = (data: {
+        poll: Exclude<PollData, "options">;
+        options: PollOption[];
+        expiresAt: number;
+    }) => {
+        setCurrentPoll(data.poll);
+        setCurrentPollOptions(data.options);
+        setCurrentPollExpiresAt(data.expiresAt);
+    };
+
+    const handleUpdateOption = (data: PollOption) => {
+        setCurrentPollOptions((prevOptions) => {
+            const index = prevOptions.findIndex((option) => option.id === data.id);
+
+            if (index === -1) {
+                return prevOptions;
+            }
+
+            const newOptions = [...prevOptions];
+            newOptions[index] = data;
+
+            return newOptions;
+        });
+    };
+
+    const handleUpdatePollQueue = (data: Exclude<PollData, "options">[]) => {
+        if (!data || !data.length) {
+            setPollQueue([]);
+            clearState();
+        }
+        setPollQueue(data);
     };
 
     const handleMessage = (event: WebSocketEventMap["message"]) => {
         const parsed: WebsocketMessage = JSON.parse(event.data);
 
-        console.log("MESSAGE: ", parsed.event);
-
         if (parsed.event === WS_EVENTS.SWITCH_POLL) {
             if (!parsed.data) {
                 clearState();
+                return;
             }
-
-            const messageData: { poll: Exclude<PollData, "options">; options: PollOption[] } =
-                parsed.data;
-
-            console.log("POLL: ", messageData.poll);
-
-            setCurrentPoll(messageData.poll);
-            setCurrentPollOptions(messageData.options);
+            handleSwitchPoll(parsed.data);
+            return;
         }
 
         if (parsed.event === WS_EVENTS.UPDATE_OPTION && parsed.data) {
-            const optionData: PollOption = parsed.data;
-
-            const newOptionsArray = [...currentPollOptions];
-            const index = newOptionsArray.findIndex((option) => option.id === optionData.id);
-            newOptionsArray.splice(index, 1, optionData);
-            setCurrentPollOptions(newOptionsArray);
+            handleUpdateOption(parsed.data);
+            return;
         }
 
         if (parsed.event === WS_EVENTS.UPDATE_POLL_QUEUE) {
-            const pollQueue: Exclude<PollData, "options">[] = parsed.data;
-            if (!pollQueue || !pollQueue.length) {
-                setPollQueue([]);
-                clearState();
-            }
-
-            setPollQueue(parsed.data);
+            handleUpdatePollQueue(parsed.data);
+            return;
         }
-
-        return;
     };
 
     const websocketOptions: Options = {
         share: true,
         onMessage: handleMessage,
-        onClose: handleClose,
         shouldReconnect: () => true,
     };
 
     const websocket = useWebSocket(WS_BASE_URL, websocketOptions);
-    return { websocket, pollQueue, currentPoll, currentPollOptions };
+    return { websocket, pollQueue, currentPoll, currentPollOptions, currentPollExpiresAt };
 };
 
 export default useVoteWebsocket;

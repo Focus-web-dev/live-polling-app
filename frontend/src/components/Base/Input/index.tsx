@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React from "react";
 
 import type { BaseInputProps } from "./types";
 
@@ -28,4 +28,4 @@ const BaseInput: React.FC<BaseInputProps> = ({
     );
 };
 
-export default memo(BaseInput);
+export default React.memo(BaseInput);

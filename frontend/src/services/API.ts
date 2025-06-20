@@ -1,7 +1,7 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 class API {
-    private baseUrl;
+    private baseUrl: string;
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
@@ -11,38 +11,29 @@ class API {
         return this.baseUrl + path;
     }
 
-    public async create(path: string, body: BodyInit) {
-        const requestUrl = this.getUrl(path);
+    private async request<T>(path: string, options: RequestInit): Promise<T> {
+        const response = await fetch(this.getUrl(path), options);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Request failed with status ${response.status}`);
+        }
+        return response.json();
+    }
 
-        const requestOptions: RequestInit = {
+    public create<T>(path: string, body: object): Promise<T> {
+        return this.request<T>(path, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body,
-        };
-
-        const response = await fetch(requestUrl, requestOptions);
-        return response.json();
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
     }
 
-    public async read(path: string) {
-        const requestUrl = this.getUrl(path);
-
-        const requestOptions: RequestInit = {
+    public read<T>(path: string): Promise<T> {
+        return this.request<T>(path, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        };
-
-        const response = await fetch(requestUrl, requestOptions);
-        return response.json();
+            headers: { "Content-Type": "application/json" },
+        });
     }
-
-    public async update() {}
-
-    public async delete() {}
 }
 
 export default new API(BASE_URL);

@@ -7,9 +7,8 @@ import API from "../../../services/API";
 import PollCreateForm from "../../../components/Poll/CreateForm";
 import { usePending } from "../../../hooks/usePending";
 
-const PollCreatePage = () => {
+const PollCreatePage: React.FC = () => {
     const [question, setQuestion] = useState<string>("How is your day?");
-
     const [options, setOptions] = useState<string[]>(["Good", "fifty-fifty", "Bad :("]);
 
     const navigate = useNavigate();
@@ -58,7 +57,7 @@ const PollCreatePage = () => {
         formPending.setPendingStatus(true);
 
         try {
-            await API.create("/polls", JSON.stringify(poll));
+            await API.create("/polls", poll);
             toast.success("Created successfully");
             await navigate("/");
         } catch {

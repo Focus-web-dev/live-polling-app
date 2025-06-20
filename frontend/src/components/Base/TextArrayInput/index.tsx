@@ -46,7 +46,13 @@ const ItemInput = React.memo(function ItemInput({
             </div>
 
             <div className="flex flex-row gap-2">
-                <button type="button" className="button outlined" onClick={handleItemRemove}>
+                <button
+                    type="button"
+                    className="button outlined"
+                    onClick={handleItemRemove}
+                    aria-label={`Remove item ${index + 1}`}
+                    tabIndex={0}
+                >
                     -
                 </button>
 
@@ -55,6 +61,8 @@ const ItemInput = React.memo(function ItemInput({
                     className="button outlined"
                     onClick={handleItemMoveUp}
                     disabled={index === 0}
+                    aria-label={`Move item ${index + 1} up`}
+                    tabIndex={0}
                 >
                     ↑
                 </button>
@@ -64,6 +72,8 @@ const ItemInput = React.memo(function ItemInput({
                     className="button outlined"
                     onClick={handleItemDown}
                     disabled={isLast}
+                    aria-label={`Move item ${index + 1} down`}
+                    tabIndex={0}
                 >
                     ↓
                 </button>
@@ -80,9 +90,12 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
     onItemAdd,
     onItemRemove,
     onItemMove,
+    className,
 }) => {
     return (
-        <div className="flex min-h-0 flex-col gap-4 rounded-lg">
+        <div
+            className={`flex min-h-0 flex-col gap-4 rounded-lg${className ? ` ${className}` : ""}`}
+        >
             <div className="flex min-h-0 flex-col gap-2">
                 {label && <p className="text-md font-bold">{label}</p>}
 
@@ -107,7 +120,13 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
                         <p className="font-medium">There no any items yet</p>
                     )}
 
-                    <button type="button" className="button outlined" onClick={onItemAdd}>
+                    <button
+                        type="button"
+                        className="button outlined"
+                        aria-label="Add new item"
+                        onClick={onItemAdd}
+                        tabIndex={0}
+                    >
                         Add new item
                     </button>
                 </div>
