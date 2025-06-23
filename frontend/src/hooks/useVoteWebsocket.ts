@@ -14,6 +14,8 @@ type UseVoteWebsocketReturn = {
     currentPoll: Exclude<PollData, "options"> | null;
     currentPollOptions: PollOption[];
     currentPollExpiresAt: number | null;
+    currentVotedOption: string | null;
+    setCurrentVotedOption: (optionId: string | null) => void;
 };
 
 const useVoteWebsocket = (): UseVoteWebsocketReturn => {
@@ -21,6 +23,7 @@ const useVoteWebsocket = (): UseVoteWebsocketReturn => {
     const [currentPoll, setCurrentPoll] = useState<Exclude<PollData, "options"> | null>(null);
     const [currentPollOptions, setCurrentPollOptions] = useState<PollOption[]>([]);
     const [currentPollExpiresAt, setCurrentPollExpiresAt] = useState<number | null>(null);
+    const [currentVotedOption, setCurrentVotedOption] = useState<string | null>(null);
 
     const clearState = () => {
         setCurrentPoll(null);
@@ -32,22 +35,24 @@ const useVoteWebsocket = (): UseVoteWebsocketReturn => {
         poll: Exclude<PollData, "options">;
         options: PollOption[];
         expiresAt: number;
+        votedOption: string | null;
     }) => {
         setCurrentPoll(data.poll);
         setCurrentPollOptions(data.options);
         setCurrentPollExpiresAt(data.expiresAt);
+        setCurrentVotedOption(data.votedOption);
     };
 
-    const handleUpdateOption = (data: PollOption) => {
+    const handleUpdateOption = (optionData: PollOption) => {
         setCurrentPollOptions((prevOptions) => {
-            const index = prevOptions.findIndex((option) => option.id === data.id);
+            const index = prevOptions.findIndex((option) => option.id === optionData.id);
 
             if (index === -1) {
                 return prevOptions;
             }
 
             const newOptions = [...prevOptions];
-            newOptions[index] = data;
+            newOptions[index] = optionData;
 
             return newOptions;
         });
@@ -91,7 +96,15 @@ const useVoteWebsocket = (): UseVoteWebsocketReturn => {
     };
 
     const websocket = useWebSocket(WS_BASE_URL, websocketOptions);
-    return { websocket, pollQueue, currentPoll, currentPollOptions, currentPollExpiresAt };
+    return {
+        websocket,
+        pollQueue,
+        currentPoll,
+        currentPollOptions,
+        currentPollExpiresAt,
+        currentVotedOption,
+        setCurrentVotedOption,
+    };
 };
 
 export default useVoteWebsocket;

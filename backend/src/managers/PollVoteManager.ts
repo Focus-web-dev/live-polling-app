@@ -26,6 +26,7 @@ class PollVoteManager {
     private pollCheckInterval: NodeJS.Timeout | null = null;
     private isActive = false;
     private connections: Record<string, WebSocket> = {};
+    private currentVoteMap: Record<string, string> = {};
 
     private websocketServer: WebSocketServer;
 
@@ -52,6 +53,7 @@ class PollVoteManager {
                         poll: this.currentPoll,
                         options: this.currentPollOptions,
                         expiresAt: this.currentPollExpiresAt,
+                        votedOption: this.currentVoteMap[clientIP] || null,
                     },
                 });
 
@@ -65,7 +67,7 @@ class PollVoteManager {
 
             ws.send(JSON.stringify(message));
 
-            ws.on("message", (message) => this.handleMessage(message));
+            ws.on("message", (message) => this.handleMessage(message, clientIP));
             ws.on("close", () => this.handleClose(clientIP));
         });
 
@@ -119,6 +121,7 @@ class PollVoteManager {
         this.currentPoll = poll;
         this.currentPollOptions = await OptionModel.findAll((qb) => qb.where({ poll_id: poll.id }));
         this.currentPollExpiresAt = Date.now() + poll.expires_in * 1000;
+        this.currentVoteMap = {};
         this.isActive = true;
 
         const message = {
@@ -156,6 +159,7 @@ class PollVoteManager {
         this.currentPollOptions = null;
         this.currentPollExpiresAt = null;
         this.isActive = false;
+        this.currentVoteMap = {};
 
         if (this.pollTimeout) {
             clearTimeout(this.pollTimeout);
@@ -173,19 +177,36 @@ class PollVoteManager {
         console.log("Connection ", ip, " removed!");
     }
 
-    private async handleVote(optionId: string): Promise<void> {
+    private async handleVote(optionId: string, clientIP: string): Promise<void> {
+        if (!this.currentPollOptions || !this.currentPollOptions.length) {
+            return;
+        }
+
+        if (this.currentVoteMap[clientIP]) {
+            return;
+        }
+
         const option = await OptionModel.incrementVote(optionId);
+        this.currentVoteMap[clientIP] = optionId;
+
+        const index = this.currentPollOptions.findIndex((option) => option.id === optionId);
+        this.currentPollOptions[index] = option;
+
         const message: WebsocketMessage = { event: WS_EVENTS.UPDATE_OPTION, data: option };
         this.broadcastMessage(message);
     }
 
-    private async handleMessage(bytes: WebSocket.RawData): Promise<void> {
+    private async handleMessage(bytes: WebSocket.RawData, clientIP?: string): Promise<void> {
         const parsed: WebsocketMessage = JSON.parse(bytes.toString());
 
         console.log("PARSED: ", parsed);
 
         if (parsed.event === WS_EVENTS.VOTE_POLL) {
-            await this.handleVote(parsed.data.id);
+            if (!clientIP) {
+                throw new Error("Client IP is undefined");
+            }
+
+            await this.handleVote(parsed.data.id, clientIP);
             return;
         }
     }
