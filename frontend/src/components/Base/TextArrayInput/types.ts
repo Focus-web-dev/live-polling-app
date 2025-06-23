@@ -8,7 +8,7 @@ export interface BaseTextArrayInputProps {
     onItemAdd: () => void;
     onItemRemove: (index: number) => void;
     onItemMove: (fromIndex: number, toIndex: number) => void;
-    className: string;
+    className?: string;
 }
 
 export interface ItemInputProps extends InputHTMLAttributes<HTMLInputElement> {

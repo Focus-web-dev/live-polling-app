@@ -8,5 +8,5 @@ export interface PollCreateFormProps {
     onOptionAdd: () => void;
     onOptionRemove: (index: number) => void;
     onOptionMove: (fromIndex: number, toIndex: number) => void;
-    className: string;
+    className?: string;
 }

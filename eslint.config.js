@@ -10,22 +10,31 @@ export default [
     // --- GLOBAL CONFIGURATION ---
     { ignores: ["frontend/dist/**"] },
     {
-        files: ["**/*"],
+        files: ["*"],
         ignores: [
             "node_modules/",
             "build/",
             "dist/",
-            "package-lock.json",
             ".git/",
             ".docker/",
             ".env",
             "*.log",
             "*.md",
+            "*.json",
             "**/package-lock.json",
             "Dockerfile",
             "docker-compose.yml",
-            "frontend/dist/**",
+            ".eslintignore",
+            ".gitignore",
+            ".prettierignore",
         ],
+        plugins: {
+            prettier: pluginPrettier,
+        },
+        rules: {
+            ...eslintConfigPrettier.rules,
+            "prettier/prettier": "error",
+        },
     },
 
     // --- Base JS/JSX/TS/TSX Configuration ---
@@ -56,27 +65,9 @@ export default [
         },
     },
 
-    // --- Prettier Configuration ---
-    {
-        files: ["**/*"],
-        plugins: {
-            prettier: pluginPrettier,
-            "prettier/prettier": [
-                "error",
-                {
-                    endOfLine: "auto",
-                },
-            ],
-        },
-        rules: {
-            ...eslintConfigPrettier.rules,
-            "prettier/prettier": "error",
-        },
-    },
-
     // --- Backend Configuration ---
     {
-        files: ["backend/**/*.js", "backend/**/*.ts"],
+        files: ["backend/**/*.{js,ts}"],
         languageOptions: {
             globals: {
                 ...globals.node,
@@ -85,6 +76,7 @@ export default [
         },
         rules: {
             "no-console": "off",
+            "@typescript-eslint/no-unused-vars": "off",
         },
     },
 

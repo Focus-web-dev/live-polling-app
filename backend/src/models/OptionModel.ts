@@ -1,23 +1,23 @@
+import { BaseModel } from "./BaseModel";
 import PollOption from "@shared/interfaces/PollOption";
-
-import { sqliteKnex } from "../config/sqliteKnex";
 import { DB_TABLE_NAMES } from "../enums/DB_TABLE_NAMES";
 
-class OptionModel {
-    public async queryById(id: string) {
-        const option: PollOption = await sqliteKnex(DB_TABLE_NAMES.options)
-            .where({ poll_id: id })
-            .first();
-        return option;
+class OptionModel extends BaseModel<PollOption> {
+    constructor() {
+        super(DB_TABLE_NAMES.OPTIONS);
     }
 
-    public async incrementVote(id: string) {
-        await sqliteKnex(DB_TABLE_NAMES.options)
-            .where({ poll_id: id })
-            .first()
-            .increment("votes", 1);
+    public async incrementVote(optionId: string): Promise<PollOption> {
+        const [updated] = await this.db(this.tableName)
+            .where({ id: optionId })
+            .update({ votes: this.db.raw("votes + 1") })
+            .returning("*");
 
-        return id;
+        if (!updated) {
+            throw new Error("Option not found");
+        }
+
+        return updated;
     }
 }
 

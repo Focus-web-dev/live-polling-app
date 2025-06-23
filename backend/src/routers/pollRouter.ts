@@ -3,7 +3,7 @@ import PollController from "../controllers/PollController";
 
 const pollRouter = express.Router();
 
-pollRouter.post("/", PollController.post);
+pollRouter.post("/", PollController.create);
 pollRouter.get("/", PollController.getAll);
 
 pollRouter.get("/:id", PollController.getById);

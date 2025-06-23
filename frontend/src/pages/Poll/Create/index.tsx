@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 
-import API from "../../../services/API";
-import PollCreateForm from "../../../components/Poll/CreateForm";
-import { usePending } from "../../../hooks/usePending";
+import API from "@/services/API";
+import PollCreateForm from "@/components/Poll/CreateForm";
+import { usePending } from "@/hooks/usePending";
 
-const PollCreatePage = () => {
+const PollCreatePage: React.FC = () => {
     const [question, setQuestion] = useState<string>("How is your day?");
-
     const [options, setOptions] = useState<string[]>(["Good", "fifty-fifty", "Bad :("]);
 
     const navigate = useNavigate();
@@ -58,7 +57,7 @@ const PollCreatePage = () => {
         formPending.setPendingStatus(true);
 
         try {
-            await API.create("/polls", JSON.stringify(poll));
+            await API.create("/polls", poll);
             toast.success("Created successfully");
             await navigate("/");
         } catch {
@@ -67,11 +66,12 @@ const PollCreatePage = () => {
             formPending.setPendingStatus(false);
         }
     };
+
     return (
-        <div className="flex w-full max-h-full items-center justify-center flex-col gap-4">
+        <div className="flex max-h-full w-full flex-col items-center justify-center gap-4">
             <h3>Create a new poll</h3>
 
-            <div className="w-full lg:max-w-2/3 bg-gray-100 h-full flex min-h-0 flex-col p-5 md:p-10 rounded-xl gap-5 md:gap-10">
+            <div className="lg:max-w-2/3 segment flex h-full min-h-0 w-full flex-col gap-5 md:gap-10">
                 <h3>Fill the form</h3>
 
                 <PollCreateForm
