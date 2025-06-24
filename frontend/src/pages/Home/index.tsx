@@ -1,11 +1,12 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo } from "react";
+
+import PollQueue from "@/components/Poll/Queue";
+import PollLiveVote from "@/components/Poll/LiveVote";
 
 import useVoteWebsocket from "@/hooks/useVoteWebsocket";
 
 import type WebsocketMessage from "@shared/interfaces/WebsocketMessage";
 import { WS_EVENTS } from "@shared/enums/WS_EVENTS";
-import PollQueue from "@/components/Poll/Queue";
-import PollLiveVote from "@/components/Poll/LiveVote";
 
 const HomePage: React.FC = () => {
     const {
