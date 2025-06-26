@@ -6,7 +6,7 @@ import type { BaseTimerProps } from "./types";
 
 const BaseTimer: React.FC<BaseTimerProps> = ({ expiresAt, className }) => {
     const [remaining, setRemaining] = useState(expiresAt - Date.now());
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const tick = () => {
@@ -22,7 +22,10 @@ const BaseTimer: React.FC<BaseTimerProps> = ({ expiresAt, className }) => {
         tick();
 
         return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
+            }
         };
     }, [expiresAt]);
 

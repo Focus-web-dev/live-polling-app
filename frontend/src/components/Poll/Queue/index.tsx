@@ -16,11 +16,7 @@ const PollQueue: React.FC<PollQueueProps> = ({ pollQueue }) => {
                 </div>
 
                 <div className="bg-primary mx-2 h-full max-h-full min-h-0 w-full overflow-x-auto rounded-xl p-5">
-                    {!pollQueue.length ? (
-                        <div className="flex h-full w-full items-center justify-center rounded-xl">
-                            <p className="font-medium md:text-xl">There no any polls in queue</p>
-                        </div>
-                    ) : (
+                    {pollQueue.length !== 0 ? (
                         <ul className="flex h-full flex-row gap-5">
                             {pollQueue.map((poll, index) => (
                                 <li
@@ -39,6 +35,10 @@ const PollQueue: React.FC<PollQueueProps> = ({ pollQueue }) => {
                                 </li>
                             ))}
                         </ul>
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center rounded-xl">
+                            <p className="font-medium md:text-xl">There no any polls in queue</p>
+                        </div>
                     )}
                 </div>
             </div>

@@ -96,7 +96,7 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
                 {label && <p className="text-md font-bold">{label}</p>}
 
                 <div className="border-primary flex flex-col gap-4 overflow-auto rounded-xl border-2 p-5">
-                    {value.length ? (
+                    {value.length !== 0 ? (
                         <div className="flex flex-col gap-2">
                             {value.map((item, index) => (
                                 <div key={item.id}>

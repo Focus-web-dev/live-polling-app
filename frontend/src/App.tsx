@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import BaseIconSprite from "@/components/Base/Icon/Sprite";
-import pagesData from "@/routes/routes";
+import pagesData from "@/routes";
 
 const App = () => {
     const router = createBrowserRouter(pagesData);

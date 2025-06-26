@@ -34,9 +34,15 @@ const PollCreatePage: React.FC = () => {
     };
 
     const handleOptionValueChange = (index: number, newValue: string) => {
-        const newOptions = [...options];
-        newOptions[index].value = newValue;
-        setOptions(newOptions);
+        setOptions((prevOptions) =>
+            prevOptions.map((option, optionIndex) => {
+                if (optionIndex === index) {
+                    return { ...option, value: newValue };
+                }
+
+                return option;
+            })
+        );
     };
 
     const handleOptionAdd = () => {
