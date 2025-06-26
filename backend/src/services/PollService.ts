@@ -33,26 +33,11 @@ class PollService {
             pollVoteManager.emitEvent(WS_EVENTS.QUEUE_POLL, { poll });
         }
 
-        return { ...poll, options: optionInserts };
+        return poll;
     }
 
     public async getAll(): Promise<PollData[]> {
-        const polls = await PollModel.findAll();
-        const options = await OptionModel.findAll();
-
-        const optionMap: Map<string, PollOption[]> = new Map();
-
-        options.forEach((option) => {
-            const isAlreadyExist = optionMap.has(option.poll_id);
-
-            if (!isAlreadyExist) {
-                optionMap.set(option.poll_id, []);
-            }
-
-            optionMap.get(option.poll_id)!.push(option);
-        });
-
-        return polls.map((poll) => ({ ...poll, options: optionMap.get(poll.id) || [] }));
+        return await PollModel.findAll();
     }
 
     public async getById(id: string): Promise<PollData> {
@@ -62,8 +47,7 @@ class PollService {
             throw new Error("Poll not found");
         }
 
-        const options = await OptionModel.findAll((qb) => qb.where({ poll_id: id }));
-        return { ...poll, options };
+        return poll;
     }
 
     public async getNonExpired(): Promise<PollData[]> {

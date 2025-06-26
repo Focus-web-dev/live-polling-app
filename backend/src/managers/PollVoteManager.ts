@@ -10,7 +10,7 @@ import PollData from "@shared/interfaces/PollData";
 import PollOption from "@shared/interfaces/PollOption";
 
 type PollVoteManagerEvents = {
-    [WS_EVENTS.QUEUE_POLL]: { poll: Omit<PollData, "options"> };
+    [WS_EVENTS.QUEUE_POLL]: { poll: PollData };
 };
 
 const RETRY_INTERVAL = 5000;
@@ -18,8 +18,8 @@ const RETRY_INTERVAL = 5000;
 let pollVoteManager: PollVoteManager | null = null;
 
 class PollVoteManager {
-    private pollQueue: Omit<PollData, "options">[] = [];
-    private currentPoll: Omit<PollData, "options"> | null = null;
+    private pollQueue: PollData[] = [];
+    private currentPoll: PollData | null = null;
     private currentPollOptions: PollOption[] | null = null;
     private currentPollExpiresAt: number | null = null;
     private pollTimeout: NodeJS.Timeout | null = null;
@@ -88,7 +88,7 @@ class PollVoteManager {
         return this.websocketServer.emit(eventName, data);
     }
 
-    private setPollQueue(newPollQueue: Omit<PollData, "options">[]): void {
+    private setPollQueue(newPollQueue: PollData[]): void {
         this.pollQueue = newPollQueue;
         const message = { event: WS_EVENTS.UPDATE_POLL_QUEUE, data: this.pollQueue };
         this.broadcastMessage(message);
@@ -117,7 +117,7 @@ class PollVoteManager {
         this.activatePoll(queue[0]);
     }
 
-    private async activatePoll(poll: Omit<PollData, "options">): Promise<void> {
+    private async activatePoll(poll: PollData): Promise<void> {
         this.currentPoll = poll;
         this.currentPollOptions = await OptionModel.findAll((qb) => qb.where({ poll_id: poll.id }));
         this.currentPollExpiresAt = Date.now() + poll.expires_in * 1000;

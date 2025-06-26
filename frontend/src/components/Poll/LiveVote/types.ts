@@ -2,8 +2,8 @@ import type PollData from "@shared/interfaces/PollData";
 import type PollOption from "@shared/interfaces/PollOption";
 
 export interface PollLiveVoteProps {
-    currentPoll: Exclude<PollData, "options"> | null;
-    currentPollOptions: PollOptionProps["option"][];
+    currentPoll: PollData | null;
+    currentPollOptions: PollOption[];
     votePercentageMap: Record<string, string>;
     totalVotes: number;
     currentPollExpiresAt: number | null;

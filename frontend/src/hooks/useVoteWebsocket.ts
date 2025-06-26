@@ -8,19 +8,9 @@ import type PollOption from "@shared/interfaces/PollOption";
 
 const WS_BASE_URL: string = import.meta.env.VITE_WS_BASE_URL || "";
 
-type UseVoteWebsocketReturn = {
-    websocket: ReturnType<typeof useWebSocket>;
-    pollQueue: Exclude<PollData, "options">[];
-    currentPoll: Exclude<PollData, "options"> | null;
-    currentPollOptions: PollOption[];
-    currentPollExpiresAt: number | null;
-    currentVotedOption: string | null;
-    setCurrentVotedOption: (optionId: string | null) => void;
-};
-
-const useVoteWebsocket = (): UseVoteWebsocketReturn => {
-    const [pollQueue, setPollQueue] = useState<Exclude<PollData, "options">[]>([]);
-    const [currentPoll, setCurrentPoll] = useState<Exclude<PollData, "options"> | null>(null);
+const useVoteWebsocket = () => {
+    const [pollQueue, setPollQueue] = useState<PollData[]>([]);
+    const [currentPoll, setCurrentPoll] = useState<PollData | null>(null);
     const [currentPollOptions, setCurrentPollOptions] = useState<PollOption[]>([]);
     const [currentPollExpiresAt, setCurrentPollExpiresAt] = useState<number | null>(null);
     const [currentVotedOption, setCurrentVotedOption] = useState<string | null>(null);
@@ -32,7 +22,7 @@ const useVoteWebsocket = (): UseVoteWebsocketReturn => {
     };
 
     const handleSwitchPoll = (data: {
-        poll: Exclude<PollData, "options">;
+        poll: PollData;
         options: PollOption[];
         expiresAt: number;
         votedOption: string | null;
@@ -44,21 +34,18 @@ const useVoteWebsocket = (): UseVoteWebsocketReturn => {
     };
 
     const handleUpdateOption = (optionData: PollOption) => {
-        setCurrentPollOptions((prevOptions) => {
-            const index = prevOptions.findIndex((option) => option.id === optionData.id);
+        setCurrentPollOptions((prevOptions) =>
+            prevOptions.map((option) => {
+                if (option.id === optionData.id) {
+                    return optionData;
+                }
 
-            if (index === -1) {
-                return prevOptions;
-            }
-
-            const newOptions = [...prevOptions];
-            newOptions[index] = optionData;
-
-            return newOptions;
-        });
+                return option;
+            })
+        );
     };
 
-    const handleUpdatePollQueue = (data: Exclude<PollData, "options">[]) => {
+    const handleUpdatePollQueue = (data: PollData[]) => {
         if (!data || !data.length) {
             setPollQueue([]);
             clearState();
