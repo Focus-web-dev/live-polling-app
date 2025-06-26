@@ -50,7 +50,6 @@ const ItemInput = React.memo(function ItemInput({
                     className="button outlined"
                     onClick={handleItemRemove}
                     aria-label={`Remove item ${index + 1}`}
-                    tabIndex={0}
                 >
                     -
                 </button>
@@ -61,7 +60,6 @@ const ItemInput = React.memo(function ItemInput({
                     onClick={handleItemMoveUp}
                     disabled={index === 0}
                     aria-label={`Move item ${index + 1} up`}
-                    tabIndex={0}
                 >
                     ↑
                 </button>
@@ -72,7 +70,6 @@ const ItemInput = React.memo(function ItemInput({
                     onClick={handleItemDown}
                     disabled={isLast}
                     aria-label={`Move item ${index + 1} down`}
-                    tabIndex={0}
                 >
                     ↓
                 </button>
@@ -124,7 +121,6 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
                         className="button outlined"
                         aria-label="Add new item"
                         onClick={onItemAdd}
-                        tabIndex={0}
                     >
                         Add new item
                     </button>
