@@ -4,12 +4,12 @@ import PollCreatePage from "@/pages/Poll/Create";
 const pagesData = [
     {
         path: "",
-        element: <HomePage />,
+        element: HomePage,
         title: "Home page",
     },
     {
         path: "poll/create",
-        element: <PollCreatePage />,
+        element: PollCreatePage,
         title: "Create poll page",
     },
 ];

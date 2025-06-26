@@ -7,7 +7,7 @@ class PollController {
         try {
             const { title, options } = req.body;
             const createdPoll = await PollService.create(title, options);
-            res.status(200).json(createdPoll);
+            res.status(201).json(createdPoll);
             return;
         } catch (error) {
             const { status, message } = ErrorHandler.handleError(error);
