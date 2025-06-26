@@ -4,9 +4,8 @@ import BaseInput from "@/components/Base/Input";
 import type { BaseTextArrayInputProps, ItemInputProps } from "./types";
 
 const ItemInput = React.memo(function ItemInput({
-    id,
+    item,
     index,
-    itemValue,
     isLast,
     onItemInputChange,
     onItemInputRemove,
@@ -37,8 +36,8 @@ const ItemInput = React.memo(function ItemInput({
                 <span className="text-lg font-bold text-white lg:text-xl">{index + 1}.</span>
 
                 <BaseInput
-                    id={`${id}-${index}`}
-                    value={itemValue}
+                    id={item.id}
+                    value={item.value}
                     onChange={handleChange}
                     placeholder="Type your option..."
                     className="w-full"
@@ -102,12 +101,12 @@ const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
                 <div className="border-primary flex flex-col gap-4 overflow-auto rounded-xl border-2 p-5">
                     {value.length ? (
                         <div className="flex flex-col gap-2">
-                            {value.map((itemValue, index) => (
-                                <div key={`${id}-${index}`}>
+                            {value.map((item, index) => (
+                                <div key={item.id}>
                                     <ItemInput
                                         id={id}
                                         index={index}
-                                        itemValue={itemValue}
+                                        item={item}
                                         isLast={index === value.length - 1}
                                         onItemInputChange={onItemValueChange}
                                         onItemInputRemove={onItemRemove}

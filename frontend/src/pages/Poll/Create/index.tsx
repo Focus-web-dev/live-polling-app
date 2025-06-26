@@ -7,9 +7,24 @@ import API from "@/services/API";
 import PollCreateForm from "@/components/Poll/CreateForm";
 import { usePending } from "@/hooks/usePending";
 
+const initialOptions = [
+    {
+        id: crypto.randomUUID(),
+        value: "Good :)",
+    },
+    {
+        id: crypto.randomUUID(),
+        value: "fifty-fifty",
+    },
+    {
+        id: crypto.randomUUID(),
+        value: "Bad :(",
+    },
+];
+
 const PollCreatePage: React.FC = () => {
     const [question, setQuestion] = useState<string>("How is your day?");
-    const [options, setOptions] = useState<string[]>(["Good", "fifty-fifty", "Bad :("]);
+    const [options, setOptions] = useState<{ id: string; value: string }[]>(initialOptions);
 
     const navigate = useNavigate();
     const formPending = usePending();
@@ -20,12 +35,17 @@ const PollCreatePage: React.FC = () => {
 
     const handleOptionValueChange = (index: number, newValue: string) => {
         const newOptions = [...options];
-        newOptions[index] = newValue;
+        newOptions[index].value = newValue;
         setOptions(newOptions);
     };
 
     const handleOptionAdd = () => {
-        setOptions([...options, ""]);
+        const newOption = {
+            id: crypto.randomUUID(),
+            value: "",
+        };
+
+        setOptions([...options, newOption]);
     };
 
     const handleOptionRemove = (index: number) => {

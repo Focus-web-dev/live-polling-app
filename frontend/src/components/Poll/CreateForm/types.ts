@@ -1,6 +1,6 @@
 export interface PollCreateFormProps {
     question: string;
-    options: string[];
+    options: { id: string; value: string }[];
     isPending: boolean;
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
     onQuestionChange: (event: React.ChangeEvent<HTMLInputElement>) => void;

@@ -1,8 +1,13 @@
 import type { InputHTMLAttributes } from "react";
 
+export type TextItem = {
+    id: string;
+    value: string;
+};
+
 export interface BaseTextArrayInputProps {
     id: string;
-    value: string[];
+    value: TextItem[];
     label?: string;
     onItemValueChange: (index: number, newValue: string) => void;
     onItemAdd: () => void;
@@ -12,9 +17,8 @@ export interface BaseTextArrayInputProps {
 }
 
 export interface ItemInputProps extends InputHTMLAttributes<HTMLInputElement> {
-    id: string;
+    item: TextItem;
     index: number;
-    itemValue: string;
     isLast: boolean;
     onItemInputChange: (index: number, newValue: string) => void;
     onItemInputRemove: (index: number) => void;
