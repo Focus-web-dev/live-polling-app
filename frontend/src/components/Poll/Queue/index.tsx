@@ -46,4 +46,4 @@ const PollQueue: React.FC<PollQueueProps> = ({ pollQueue }) => {
     );
 };
 
-export default React.memo(PollQueue);
+export default PollQueue;

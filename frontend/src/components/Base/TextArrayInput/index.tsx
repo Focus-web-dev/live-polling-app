@@ -1,9 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import BaseInput from "@/components/Base/Input";
 import type { BaseTextArrayInputProps, ItemInputProps } from "./types";
 
-const ItemInput = React.memo(function ItemInput({
+const ItemInput = function ({
     item,
     index,
     isLast,
@@ -11,24 +11,19 @@ const ItemInput = React.memo(function ItemInput({
     onItemInputRemove,
     onItemInputMove,
 }: ItemInputProps) {
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            onItemInputChange(index, e.target.value);
-        },
-        [index, onItemInputChange]
-    );
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onItemInputChange(index, e.target.value);
+    };
 
-    const handleItemRemove = useCallback(() => {
-        onItemInputRemove(index);
-    }, [index, onItemInputRemove]);
+    const handleItemRemove = () => onItemInputRemove(index);
 
-    const handleItemMoveUp = useCallback(() => {
+    const handleItemMoveUp = () => {
         onItemInputMove(index, index - 1);
-    }, [index, onItemInputMove]);
+    };
 
-    const handleItemDown = useCallback(() => {
+    const handleItemDown = () => {
         onItemInputMove(index, index + 1);
-    }, [index, onItemInputMove]);
+    };
 
     return (
         <div className={`flex min-h-0 flex-col gap-2 sm:flex-row sm:items-center`}>
@@ -76,7 +71,7 @@ const ItemInput = React.memo(function ItemInput({
             </div>
         </div>
     );
-});
+};
 
 const BaseTextArrayInput: React.FC<BaseTextArrayInputProps> = ({
     id,

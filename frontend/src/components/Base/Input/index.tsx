@@ -28,4 +28,4 @@ const BaseInput: React.FC<BaseInputProps> = ({
     );
 };
 
-export default React.memo(BaseInput);
+export default BaseInput;

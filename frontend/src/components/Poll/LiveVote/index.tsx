@@ -4,7 +4,7 @@ import BaseTimer from "@/components/Base/Timer/BaseTimer";
 import type { PollLiveVoteProps, PollOptionProps } from "./types";
 import BaseIcon from "@/components/Base/Icon";
 
-const PollOption: React.FC<PollOptionProps> = React.memo(function PollOption({
+const PollOption: React.FC<PollOptionProps> = function ({
     index,
     option,
     percentage,
@@ -62,7 +62,7 @@ const PollOption: React.FC<PollOptionProps> = React.memo(function PollOption({
             </button>
         </div>
     );
-});
+};
 
 const PollLiveVote: React.FC<PollLiveVoteProps> = ({
     currentPoll,
@@ -119,4 +119,4 @@ const PollLiveVote: React.FC<PollLiveVoteProps> = ({
     );
 };
 
-export default React.memo(PollLiveVote);
+export default PollLiveVote;

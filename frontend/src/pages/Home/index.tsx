@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
         setCurrentVotedOption,
     } = useVoteWebsocket();
 
-    const hasVoted = useMemo(() => !!currentVotedOption, [currentVotedOption]);
+    const hasVoted = !!currentVotedOption;
 
     const totalVotes = useMemo(() => {
         if (!currentPollOptions || !currentPollOptions.length) {

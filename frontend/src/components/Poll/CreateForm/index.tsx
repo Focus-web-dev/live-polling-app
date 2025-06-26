@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 import BaseInput from "@/components/Base/Input";
 import BaseTextArrayInput from "@/components/Base/TextArrayInput";
 
@@ -49,4 +47,4 @@ const PollCreateForm: React.FC<PollCreateFormProps> = ({
     );
 };
 
-export default memo(PollCreateForm);
+export default PollCreateForm;
